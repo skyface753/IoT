@@ -97,20 +97,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Databases appwriteDatabases = AppWriteCustom().getAppwriteDatabases();
   Teams appwriteTeams = AppWriteCustom().getAppwriteTeams();
 
-  Future<List<Document>> getData() async {
-    return await appwriteDatabases
-        .listDocuments(collectionId: AppWriteCustom.collectionID)
-        .then((value) {
-      return value.documents;
-    });
-  }
-
-  Future<List<Team>> getTeams() async {
-    return await appwriteTeams.list().then((value) {
-      return value.teams;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,45 +104,55 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: FutureBuilder(
-        future: getData(),
-        builder: (context, AsyncSnapshot<List<Document>> snapshot) {
+        future: AppWriteCustom().getWardrobe(),
+        builder: (context, AsyncSnapshot<Wardrobe> snapshot) {
           if (snapshot.hasData) {
             return Column(
               children: [
-                FutureBuilder(
-                  future: getTeams(),
-                  builder: (context, AsyncSnapshot<List<Team>> snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(snapshot.data![index].name),
-                          );
-                        },
-                      );
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
-                ColoredBox(
-                  color: Colors.red,
-                  child: Text('${snapshot.data!.length}'),
-                ),
+                // FutureBuilder(
+                //   future: AppWriteCustom().getTeams(),
+                //   builder: (context, AsyncSnapshot<List<Team>> snapshot) {
+                //     if (snapshot.hasData) {
+                //       return ListView.builder(
+                //         shrinkWrap: true,
+                //         physics: const NeverScrollableScrollPhysics(),
+                //         itemCount: snapshot.data!.length,
+                //         itemBuilder: (context, index) {
+                //           return ListTile(
+                //             title: Text(snapshot.data![index].name),
+                //           );
+                //         },
+                //       );
+                //     } else {
+                //       return Center(
+                //         child: CircularProgressIndicator(),
+                //       );
+                //     }
+                //   },
+                // ),
+                // ColoredBox(
+                //   color: Colors.red,
+                //   child: Text('${snapshot.data!.products.length}'),
+                // ),
                 Expanded(
                   child: GridView.builder(
-                    itemCount: snapshot.data!.length,
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.products.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
+                      mainAxisExtent: 200,
                     ),
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(snapshot.data![index].$id),
+                      return Card(
+                        child: ListTile(
+                          title: Text(snapshot.data!.products[index].Title),
+                          // subtitle: Text(snapshot.data!.products[index].description),
+                        ),
                       );
+                      // return ListTile(
+                      //   tileColor: Colors.red,
+                      //   title: Text(snapshot.data!.products[index].Title),
+                      // );
                     },
                   ),
                 )

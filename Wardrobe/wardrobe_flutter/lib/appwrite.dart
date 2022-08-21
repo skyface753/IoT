@@ -1,4 +1,6 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
+import 'package:wardrobe_flutter/screens/add_product.dart';
 
 Client appwriteClient = Client();
 Storage appwriteStorage = Storage(appwriteClient);
@@ -33,4 +35,53 @@ class AppWriteCustom {
   getAppwriteTeams() {
     return appwriteTeams;
   }
+
+  Future<Wardrobe> getWardrobe() async {
+    // var docs =  await appwriteDatabases
+    //     .listDocuments(collectionId: AppWriteCustom.collectionID)
+    //     .then((value) {
+    //   print(value.documents);
+    //   return value.documents;
+    // });
+    return Wardrobe.test();
+  }
+
+  Future<List<Team>> getTeams() async {
+    return await appwriteTeams.list().then((value) {
+      return value.teams;
+    });
+  }
+}
+
+class Wardrobe {
+  int colums;
+  int rows;
+  List<Product> products;
+
+  Wardrobe(this.colums, this.rows, this.products);
+
+  Wardrobe.test()
+      : this.colums = 2,
+        this.rows = 2,
+        this.products = [
+          Product("Test1", "test1",
+              "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"),
+          Product("Test2", "test2",
+              "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"),
+          Product("Test3", "test3",
+              "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"),
+          Product("Test4", "test4",
+              "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"),
+        ];
+
+  Wardrobe.fromJson(Map<String, dynamic> json)
+      : colums = json['colums'],
+        rows = json['rows'],
+        products = json['products'];
+
+  Map<String, dynamic> toJson() => {
+        'colums': colums,
+        'rows': rows,
+        'products': products,
+      };
 }

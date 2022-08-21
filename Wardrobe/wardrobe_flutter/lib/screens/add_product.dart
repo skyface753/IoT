@@ -33,19 +33,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Future<List<Product>> getAllProducts() async {
     DocumentList docs = await appwriteDatabases.listDocuments(
         collectionId: AppWriteCustom.productCollectionID);
-    print("HI");
     List<Product> products = [];
-    print(docs.documents.first.data);
     for (var doc in docs.documents) {
-      print("Dhwud");
-      try {
-        products.add(Product.fromJson(doc.data));
-      } catch (e) {
-        print(e);
-      }
-      print("cjnjcbe");
+      products.add(Product.fromJson(doc.data));
     }
-    print("HI2");
     return products;
   }
 
