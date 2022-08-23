@@ -2,10 +2,11 @@ import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wardrobe_flutter/appwrite.dart';
+import 'package:wardrobe_flutter/services/api.dart';
 
 // ignore: must_be_immutable
 class RegisterScreen extends StatefulWidget {
+  static const routeName = '/register';
   static String id = '/RegisterPage';
 
   @override
@@ -25,8 +26,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String _emailText = 'Please use a valid email';
   String _passwordText = 'Please use a strong password';
-
-  Account appwriteAccount = AppWriteCustom().getAppwriteAccount();
 
   @override
   Widget build(BuildContext context) {
@@ -120,26 +119,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                     try {
                       print("q");
-                      await appwriteAccount
-                          .create(
-                              userId: 'unique()',
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                              name: _nameController.text)
-                          .then((value) async {
-                        await appwriteAccount
-                            .createEmailSession(
-                                email: _emailController.text,
-                                password: _passwordController.text)
-                            .then((value) async => {
-                                  await SharedPreferences.getInstance().then(
-                                      (value) => {
-                                            value.setBool('isLoggedIn', true),
-                                            Navigator.pushReplacementNamed(
-                                                context, '/')
-                                          })
-                                });
-                      });
+                      if (await ApiService.register(
+                          _nameController.text, _passwordController.text)) {
+                        print("q");
+                        await SharedPreferences.getInstance().then((value) => {
+                              value.setBool('isLoggedIn', true),
+                              Navigator.pushReplacementNamed(
+                                  context, '/wardrobes')
+                            });
+                      } else {
+                        print("q");
+                        setState(() {
+                          _wrongEmail = true;
+                        });
+                      }
                     } catch (e) {
                       print(e);
                       setState(() {

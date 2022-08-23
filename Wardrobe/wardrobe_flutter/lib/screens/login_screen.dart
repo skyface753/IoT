@@ -2,9 +2,10 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wardrobe_flutter/appwrite.dart';
+import 'package:wardrobe_flutter/services/api.dart';
 
 class LoginScreen extends StatefulWidget {
+  static const String routeName = '/login';
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
@@ -12,8 +13,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  Account appwriteAccount = AppWriteCustom().getAppwriteAccount();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   final RoundedLoadingButtonController _btnController =
@@ -21,15 +21,18 @@ class LoginScreenState extends State<LoginScreen> {
 
   void login() async {
     try {
-      await appwriteAccount.createEmailSession(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-      _btnController.success();
-      await SharedPreferences.getInstance().then((value) => {
-            value.setBool('isLoggedIn', true),
-            Navigator.pushReplacementNamed(context, '/')
-          });
+      if (await ApiService.login(
+          _usernameController.text, _passwordController.text)) {
+        _btnController.success();
+        await SharedPreferences.getInstance().then((value) => {
+              value.setBool('isLoggedIn', true),
+              Navigator.pushReplacementNamed(context, '/wardrobes')
+            });
+      } else {
+        setState(() {
+          _btnController.reset();
+        });
+      }
     } catch (e) {
       setState(() {
         _btnController.error();
@@ -49,7 +52,7 @@ class LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TextField(
-              controller: _emailController,
+              controller: _usernameController,
               autofocus: true,
               decoration: const InputDecoration(
                 labelText: 'Email',
