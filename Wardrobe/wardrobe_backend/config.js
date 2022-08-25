@@ -1,6 +1,6 @@
 const config = {
   db: {
-    host: "localhost",
+    host: "db",
     user: "wardrobe_user",
     password: "wardrobe_pass",
     database: "wardrobe_db",

@@ -5,12 +5,11 @@ import 'package:wardrobe_flutter/models/drawer.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
 
-String host = "http://localhost:5000";
-
-String apiKey =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpYXQiOjE2NjEyNjAzNTIsImV4cCI6MTY2Mzg1MjM1Mn0.Ww3tl2HDd8QHG7Hz5pl6wQ77kpPcX9eZcwFB54TY2hQ";
-
 class ApiService {
+  static String serverPath = 'http://localhost:5000/file/upload';
+  static String host = "http://localhost:5000";
+  static String apiKey =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpYXQiOjE2NjEyNjAzNTIsImV4cCI6MTY2Mzg1MjM1Mn0.Ww3tl2HDd8QHG7Hz5pl6wQ77kpPcX9eZcwFB54TY2hQ";
   static Future<List<Wardrobe>?> getAllWardrobes() async {
     try {
       final response = await http.post(Uri.parse(host + "/wardrobe/all"),
@@ -61,12 +60,13 @@ class ApiService {
     }
   }
 
-  static Future<List<WardrobeDrawer>?> getDrawerByWardrobeId(
+  static Future<List<WardrobeDrawer>?> getProductsByWardrobeId(
       String wardrobeId) async {
     try {
-      final response = await http.post(
-          Uri.parse(host + "/drawer/by-wardrobe/" + wardrobeId),
-          body: {});
+      final response =
+          await http.post(Uri.parse(host + "/wardrobe/productsById"), body: {
+        "wardrobeId": wardrobeId,
+      });
 
       if (response.statusCode == 200) {
         var returnResponse = json.decode(response.body);

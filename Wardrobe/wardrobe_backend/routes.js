@@ -5,7 +5,6 @@ const Middleware = require("./middleware");
 
 const UserService = require("./services/user_service");
 const WardrobeService = require("./services/wardrobe_service");
-const DrawerService = require("./services/drawer_service");
 const ProductService = require("./services/product_service");
 
 router.post("/logout", UserService.logout);
@@ -23,18 +22,13 @@ router.use(async (req, res, next) => {
 
 //Wardrobe
 router.post("/wardrobe/all", WardrobeService.getAll);
-
-//Drawer
-router.post(
-  "/drawer/by-wardrobe/:wardrobeId",
-  DrawerService.getDrawerByWardrobeId
-);
-
+router.post("/wardrobe/productsById", WardrobeService.productsByWardrobeId);
 //Product
 router.post("/product/all", ProductService.getAll);
 router.post(
   "/product/by-drawer/:drawerId",
   ProductService.getProductsByDrawerId
 );
+router.post("/product/create", ProductService.createProduct);
 
 module.exports = router;

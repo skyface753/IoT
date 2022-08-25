@@ -4,15 +4,17 @@ import 'package:wardrobe_flutter/models/drawers_products_XREF.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
-class ProductsScreen extends StatefulWidget {
-  static const String routeName = '/drawer/show';
+class ShowProductsInDrawerScreen extends StatefulWidget {
+  static const String routeName = '/wardrobe/products/show';
   final String drawerId;
-  const ProductsScreen(this.drawerId, {Key? key}) : super(key: key);
+  const ShowProductsInDrawerScreen(this.drawerId, {Key? key}) : super(key: key);
   @override
-  ProductsScreenState createState() => ProductsScreenState();
+  ShowProductsInDrawerScreenState createState() =>
+      ShowProductsInDrawerScreenState();
 }
 
-class ProductsScreenState extends State<ProductsScreen> {
+class ShowProductsInDrawerScreenState
+    extends State<ShowProductsInDrawerScreen> {
   @override
   Widget build(BuildContext context) {
     String currDrawerId = widget.drawerId;
@@ -36,10 +38,16 @@ class ProductsScreenState extends State<ProductsScreen> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   return ListTile(
+                    leading: snapshot.data![index].imagePath != null
+                        ? CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                "${ApiService.host}/${snapshot.data![index].imagePath!}"))
+                        : const CircleAvatar(
+                            backgroundImage: AssetImage(
+                                'images/No_image_available.svg.png')),
                     title: Text(snapshot.data![index].name),
                     subtitle: Text(snapshot.data![index].description),
-                    trailing: Text(
-                        "${snapshot.data![index].number} / ${snapshot.data![index].stock}"),
+                    trailing: Text("${snapshot.data![index].number}"),
                     onTap: () {
                       Navigator.pushNamed(context, '/product/show',
                           arguments: snapshot.data![index]);

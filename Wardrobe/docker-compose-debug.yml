@@ -14,6 +14,8 @@ services:
       test: ["CMD", "mysqladmin", "-uroot" , "-pexample" ,"ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
+    volumes:
+      - ./data/db:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin
@@ -22,3 +24,13 @@ services:
     ports:
       - 8084:80
     restart: always
+  
+  backend:
+    build:
+      context: ./wardrobe_backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    restart: always
+    volumes:
+      - ./wardrobe_backend:/usr/src/app

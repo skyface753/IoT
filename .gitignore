@@ -1,1 +1,7 @@
 Wardrobe/wardrobe_backend/node_modules/**
+Wardrobe/.DS_Store
+
+.DS_Store
+Wardrobe/wardrobe_backend/uploads/**
+!Wardrobe/wardrobe_backend/uploads/.placeholder
+Wardrobe/data/db/**

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wardrobe_flutter/screens/drawers_screen.dart';
-import 'package:wardrobe_flutter/screens/login_screen.dart';
-import 'package:wardrobe_flutter/screens/products_screen.dart';
-import 'package:wardrobe_flutter/screens/register_screen.dart';
-import 'package:wardrobe_flutter/screens/wardrobes_screen.dart';
+import 'package:wardrobe_flutter/screens/create_product.dart';
+import 'package:wardrobe_flutter/screens/show_single_wardrobe_drawer.dart';
+import 'package:wardrobe_flutter/screens/authentication/login_screen.dart';
+import 'package:wardrobe_flutter/screens/show_products_in_drawer.dart';
+import 'package:wardrobe_flutter/screens/authentication/register_screen.dart';
+import 'package:wardrobe_flutter/screens/show_all_wardrobes_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +31,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      initialRoute: '/wardrobes',
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
       onGenerateRoute: (settings) {
         // settings.name = settings.name.toLowerCase();
         RouteSettings routeSettings = RouteSettings(name: settings.name);
@@ -39,20 +41,20 @@ class MyApp extends StatelessWidget {
             int questionMarkIndex = settings.name!.toLowerCase().indexOf('?');
             switch (
                 settings.name!.toLowerCase().substring(0, questionMarkIndex)) {
-              case DrawersScreen.routeName:
-                final wardrobeId =
-                    Uri.parse(settings.name!).queryParameters['wardrobeId'];
-                return MaterialPageRoute(
-                  builder: (context) => DrawersScreen(
-                    wardrobeId!,
-                  ),
-                  settings: routeSettings,
-                );
-              case ProductsScreen.routeName:
+              // case DrawersScreen.routeName:
+              //   final wardrobeId =
+              //       Uri.parse(settings.name!).queryParameters['wardrobeId'];
+              //   return MaterialPageRoute(
+              //     builder: (context) => DrawersScreen(
+              //       wardrobeId!,
+              //     ),
+              //     settings: routeSettings,
+              //   );
+              case ShowProductsInDrawerScreen.routeName:
                 final drawerId =
                     Uri.parse(settings.name!).queryParameters['drawerId'];
                 return MaterialPageRoute(
-                    builder: (context) => ProductsScreen(
+                    builder: (context) => ShowProductsInDrawerScreen(
                           drawerId!,
                         ),
                     settings: routeSettings);
@@ -64,22 +66,30 @@ class MyApp extends StatelessWidget {
         switch (settings.name!.toLowerCase()) {
           case LoginScreen.routeName:
             return MaterialPageRoute(
-                builder: (context) => LoginScreen(), settings: routeSettings);
+                builder: (context) => const LoginScreen(),
+                settings: routeSettings);
           case RegisterScreen.routeName:
             return MaterialPageRoute(
                 builder: (context) => RegisterScreen(),
                 settings: routeSettings);
-          case WardrobesScreen.routeName:
+          case CreateProductScreen.routeName:
             return MaterialPageRoute(
-                builder: (context) => WardrobesScreen(),
+                builder: (context) => const CreateProductScreen(),
+                settings: routeSettings);
+
+          case ShowAllWardrobesScreen.routeName:
+            return MaterialPageRoute(
+                builder: (context) => const ShowAllWardrobesScreen(),
                 settings: routeSettings);
           case '/':
             return MaterialPageRoute(
-                builder: (context) => WardrobesScreen(),
+                builder: (context) => const ShowAllWardrobesScreen(),
                 settings: routeSettings);
         }
       },
       routes: {
+        ShowSingleWardrobeDrawerScreen.routeName: (context) =>
+            ShowSingleWardrobeDrawerScreen(),
         // '/': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
         // '/login': (context) => const LoginScreen(),
         // '/register': (context) => RegisterScreen(),

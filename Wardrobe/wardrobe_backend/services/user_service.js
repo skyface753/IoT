@@ -142,6 +142,32 @@ let UserService = {
       message: "User created",
     });
   },
+  getUsername: async (req, res) => {
+    let userId = verifyToken(req);
+    if (!userId) {
+      res.json({
+        success: false,
+        message: "No user found",
+      });
+      return;
+    }
+    let user = await db.query("SELECT * FROM user WHERE id = ?", [userId]);
+    if (user.length == 0) {
+      res.json({
+        success: false,
+        message: "User not in DB",
+      });
+      return;
+    }
+    user = user[0];
+    user.password = undefined;
+    res.json({
+      success: true,
+      message: "User found",
+      user: user,
+    });
+  },
+
   signTokenExport: signToken,
   verifyTokenExport: verifyToken,
 };
