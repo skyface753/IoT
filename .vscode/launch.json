@@ -1,0 +1,13 @@
+{
+    "configurations": [
+        
+        {
+            "name": "Flutter (Chrome)",
+            "program": "lib/main.dart",
+            "cwd": "Wardrobe/wardrobe_flutter",
+            "deviceId": "chrome",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}

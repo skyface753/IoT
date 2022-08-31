@@ -52,6 +52,9 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                   // Prevent onchange
                   return;
                 }),
+            serverFileId != null
+                ? Text('Server file id: $serverFileId')
+                : Container(),
             IconButton(
                 onPressed: () async {
                   print("Add Image");
@@ -84,6 +87,17 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
             ElevatedButton(
                 onPressed: () {
                   print("Create Product");
+                  ApiService.createProduct(
+                    _nameController.text,
+                    _descriptionController.text,
+                    serverFileId,
+                  ).then((wasSuccessful) {
+                    if (wasSuccessful) {
+                      Navigator.pop(context);
+                    } else {
+                      print("Error creating product");
+                    }
+                  });
                 },
                 child: Text("Create Product"))
           ],

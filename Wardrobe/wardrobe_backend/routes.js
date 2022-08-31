@@ -23,6 +23,7 @@ router.use(async (req, res, next) => {
 //Wardrobe
 router.post("/wardrobe/all", WardrobeService.getAll);
 router.post("/wardrobe/productsById", WardrobeService.productsByWardrobeId);
+router.post("/wardrobe/create", WardrobeService.create);
 //Product
 router.post("/product/all", ProductService.getAll);
 router.post(

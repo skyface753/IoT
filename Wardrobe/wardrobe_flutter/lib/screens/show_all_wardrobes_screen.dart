@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
 import 'package:wardrobe_flutter/screens/authentication/login_screen.dart';
 import 'package:wardrobe_flutter/screens/create_product.dart';
+import 'package:wardrobe_flutter/screens/create_wardrobe.dart';
 import 'package:wardrobe_flutter/screens/show_single_wardrobe_drawer.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
@@ -26,8 +28,7 @@ class ShowAllWardrobesScreenState extends State<ShowAllWardrobesScreen> {
               icon: Icon(Icons.login)),
           IconButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(
-                    context, CreateProductScreen.routeName);
+                Navigator.pushNamed(context, CreateProductScreen.routeName);
               },
               icon: Icon(Icons.production_quantity_limits)),
         ],
@@ -62,6 +63,19 @@ class ShowAllWardrobesScreenState extends State<ShowAllWardrobesScreen> {
             );
           }
         },
+      ),
+      floatingActionButton: SpeedDial(
+        icon: Icons.add,
+        activeIcon: Icons.close,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.add),
+            label: 'Create new wardrobe',
+            onTap: () {
+              Navigator.pushNamed(context, CreateWardrobeScreen.routeName);
+            },
+          ),
+        ],
       ),
     );
   }

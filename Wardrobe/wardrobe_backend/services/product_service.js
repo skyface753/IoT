@@ -3,7 +3,9 @@ const LedService = require("./led_service");
 
 const ProductService = {
   getAll: async (req, res) => {
-    let products = await db.query("SELECT * FROM product");
+    let products = await db.query(
+      "SELECT `product`.`id`, `product`.`name`, `product`.`description`, `product_images`.`genFilename`, `product`.`borrowed_num`, SUM(cast(wardrobe_product_XREF.number as int)) as in_stock FROM product LEFT JOIN product_images ON product.image_fk = product_images.id LEFT JOIN wardrobe_product_XREF ON `wardrobe_product_XREF`.`product_fk` = `product`.`id` GROUP BY product.id;"
+    );
     res.json(products);
   },
   getProductsByDrawerId: async (req, res) => {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wardrobe_flutter/screens/create_product.dart';
+import 'package:wardrobe_flutter/screens/create_wardrobe.dart';
 import 'package:wardrobe_flutter/screens/show_single_wardrobe_drawer.dart';
 import 'package:wardrobe_flutter/screens/authentication/login_screen.dart';
 import 'package:wardrobe_flutter/screens/show_products_in_drawer.dart';
@@ -50,14 +51,14 @@ class MyApp extends StatelessWidget {
               //     ),
               //     settings: routeSettings,
               //   );
-              case ShowProductsInDrawerScreen.routeName:
-                final drawerId =
-                    Uri.parse(settings.name!).queryParameters['drawerId'];
-                return MaterialPageRoute(
-                    builder: (context) => ShowProductsInDrawerScreen(
-                          drawerId!,
-                        ),
-                    settings: routeSettings);
+              // case ShowProductsInDrawerScreen.routeName:
+              //   final drawerId =
+              //       Uri.parse(settings.name!).queryParameters['drawerId'];
+              //   return MaterialPageRoute(
+              //       builder: (context) => ShowProductsInDrawerScreen(
+              //             drawerId!,
+              //           ),
+              //       settings: routeSettings);
             }
           } catch (e) {
             print(e);
@@ -90,6 +91,7 @@ class MyApp extends StatelessWidget {
       routes: {
         ShowSingleWardrobeDrawerScreen.routeName: (context) =>
             ShowSingleWardrobeDrawerScreen(),
+        CreateWardrobeScreen.routeName: (context) => CreateWardrobeScreen(),
         // '/': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
         // '/login': (context) => const LoginScreen(),
         // '/register': (context) => RegisterScreen(),

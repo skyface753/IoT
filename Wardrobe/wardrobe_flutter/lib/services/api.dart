@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:wardrobe_flutter/models/drawer.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
+import 'package:wardrobe_flutter/models/wardrobe_products.dart';
 
 class ApiService {
   static String serverPath = 'http://localhost:5000/file/upload';
@@ -60,7 +61,7 @@ class ApiService {
     }
   }
 
-  static Future<List<WardrobeDrawer>?> getProductsByWardrobeId(
+  static Future<List<WardrobeProduct>?> getProductsByWardrobeId(
       String wardrobeId) async {
     try {
       final response =
@@ -72,7 +73,7 @@ class ApiService {
         var returnResponse = json.decode(response.body);
         print(returnResponse);
         return returnResponse
-            .map<WardrobeDrawer>((json) => WardrobeDrawer.fromJson(json))
+            .map<WardrobeProduct>((json) => WardrobeProduct.fromJson(json))
             .toList();
       } else {
         print("ERROR");
@@ -85,10 +86,41 @@ class ApiService {
     }
   }
 
-  static Future<List<Product>?> getProductsByDrawerId(String drawerId) async {
+  static Future<bool> createProduct(
+      String name, String description, int? image_fk) async {
+    print("Name: $name");
+    print("Description: $description");
+    print("Image_fk: $image_fk");
+    late var body;
+
+    if (image_fk != null) {
+      body = {
+        "name": name,
+        "description": description,
+        "image_fk": image_fk.toString(),
+      };
+    } else {
+      body = {
+        "name": name,
+        "description": description,
+      };
+    }
+    final response =
+        await http.post(Uri.parse(host + "/product/create"), body: body);
+    print(response.body);
+    if (response.statusCode == 200) {
+      var returnResponse = json.decode(response.body);
+      print(returnResponse);
+      return returnResponse['success'];
+    } else {
+      return false;
+    }
+  }
+
+  static Future<List<Product>?> getAllProducts() async {
     try {
-      final response = await http
-          .post(Uri.parse(host + "/product/by-drawer/" + drawerId), body: {});
+      final response = await http.post(Uri.parse(host + "/product/all"),
+          body: {}, headers: {"authorization": apiKey});
 
       if (response.statusCode == 200) {
         var returnResponse = json.decode(response.body);
@@ -98,7 +130,6 @@ class ApiService {
             .toList();
       } else {
         print("ERROR");
-        print(response.statusCode);
         throw Exception('Failed to load post');
       }
     } catch (e) {
@@ -106,4 +137,45 @@ class ApiService {
       return null;
     }
   }
+
+  static Future<bool> createWardrobe(String name, int columns, int rows) async {
+    final response =
+        await http.post(Uri.parse(host + "/wardrobe/create"), body: {
+      "fname": name,
+      "columns": columns.toString(),
+      "rows": rows.toString(),
+    }, headers: {
+      "authorization": apiKey
+    });
+    print(response.body);
+    if (response.statusCode == 200) {
+      var returnResponse = json.decode(response.body);
+      print(returnResponse);
+      return returnResponse['success'];
+    } else {
+      return false;
+    }
+  }
+
+  // static Future<List<Product>?> getProductsByDrawerId(String drawerId) async {
+  //   try {
+  //     final response = await http
+  //         .post(Uri.parse(host + "/product/by-drawer/" + drawerId), body: {});
+
+  //     if (response.statusCode == 200) {
+  //       var returnResponse = json.decode(response.body);
+  //       print(returnResponse);
+  //       return returnResponse
+  //           .map<Product>((json) => Product.fromJson(json))
+  //           .toList();
+  //     } else {
+  //       print("ERROR");
+  //       print(response.statusCode);
+  //       throw Exception('Failed to load post');
+  //     }
+  //   } catch (e) {
+  //     print(e);
+  //     return null;
+  //   }
+  // }
 }
