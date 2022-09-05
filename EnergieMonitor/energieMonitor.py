@@ -38,6 +38,7 @@ def refreshDisplay(cityName, abundancePercent):
          
 def showDataOnDisplay(city):
    cityName = city.municipality.name
+   
    sun = city.info.sun.rise + "-" + city.info.sun.set
    wind = str(city.info.wind.value) + " " + city.info.wind.unit
    powerplants = city.powerplants
@@ -49,6 +50,9 @@ def showDataOnDisplay(city):
    for load in loads:
       loadGesamt += load.value
    abundancePercent = int((prodGesamt / loadGesamt) * 100)
+   # Cut the name to 16 (max) - abundancePercent Length - 2 (for the space and the %)
+   cityName = cityName[:16 - len(str(abundancePercent)) - 2]
+   
    prodGesamtStr = str(prodGesamt) + " " + powerplants[0].unit
    loadGesamtStr = str(loadGesamt) + " " + loads[0].unit
    difference = prodGesamt - loadGesamt
