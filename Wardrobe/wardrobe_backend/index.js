@@ -81,7 +81,7 @@ app.post("/file/upload", upload.single("myFile"), async (req, res, next) => {
     });
   }
   var uploadedFile = await db.query(
-    "INSERT INTO product_images (user_fk, origFilename, genFilename, timestamp) VALUES (?, ?, ?, current_timestamp())",
+    "INSERT INTO product_images (user_fk, origFilename, imagePath, timestamp) VALUES (?, ?, ?, current_timestamp())",
     [userId, file.originalname, file.path]
   );
   if (!uploadedFile) {

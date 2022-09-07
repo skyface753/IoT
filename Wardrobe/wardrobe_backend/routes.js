@@ -31,5 +31,6 @@ router.post(
   ProductService.getProductsByDrawerId
 );
 router.post("/product/create", ProductService.createProduct);
+router.post("/product/addProductToDrawer", ProductService.addProductToDrawer);
 
 module.exports = router;

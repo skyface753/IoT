@@ -1,4 +1,15 @@
-var isAPi = false;
+var isAPi = false; // Is a Pi
+var LCDPLATE, lcd;
+try {
+  LCDPLATE = require("adafruit-i2c-lcd").plate;
+  lcd = new LCDPLATE(1, 0x16);
+  lcd.message("Hello World!");
+  isAPi = true;
+} catch (e) {
+  console.log("LCD not found");
+  isAPi = false;
+}
+
 try {
   var Gpio = require("onoff").Gpio; //include onoff to interact with the GPIO
   var Regal1Schublade1 = new Gpio(4, "out"); //use GPIO pin 4, and specify that it is output
@@ -7,7 +18,8 @@ try {
   var Regal1Schublade4 = new Gpio(7, "out"); //use GPIO pin 7, and specify that it is output
   isAPi = true;
 } catch (err) {
-  console.log(err);
+  console.log("GPIO not found");
+  isAPi = false;
 }
 // var LED = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
 // var blinkInterval = setInterval(blinkLED, 250); //run the blinkLED function every 250ms

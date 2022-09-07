@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:wardrobe_flutter/components/products_listtile.dart';
+import 'package:wardrobe_flutter/models/darwer_position.dart';
 import 'package:wardrobe_flutter/models/drawer.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
 import 'package:wardrobe_flutter/models/wardrobe_products.dart';
-import 'package:wardrobe_flutter/screens/show_products_in_drawer.dart';
+import 'package:wardrobe_flutter/screens/add_product_to_drawer.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
 class ShowSingleWardrobeDrawerScreen extends StatefulWidget {
@@ -96,36 +98,32 @@ class ShowSingleWardrobeDrawerScreenState
                                 return Container(
                                   height:
                                       MediaQuery.of(context).size.height * 0.8,
-                                  child: ListView.builder(
-                                    itemCount: productsAtColAndRow.length,
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                          title: Text(
-                                              productsAtColAndRow[index].name),
-                                          subtitle: Text(
-                                              productsAtColAndRow[index]
-                                                  .description),
-                                          leading: SizedBox(
-                                              width: 50,
-                                              height: 50,
-                                              child: productsAtColAndRow[index]
-                                                          .genFilename !=
-                                                      null
-                                                  ? CircleAvatar(
-                                                      backgroundImage:
-                                                          NetworkImage(ApiService
-                                                                  .host +
-                                                              "/" +
-                                                              productsAtColAndRow[
-                                                                      index]
-                                                                  .genFilename!),
-                                                    )
-                                                  : CircleAvatar(
-                                                      backgroundImage: AssetImage(
-                                                          'images/No_image_available.svg.png'))));
-                                    },
-                                  ),
+                                  child: Column(children: [
+                                    ListView.builder(
+                                      itemCount: productsAtColAndRow.length,
+                                      shrinkWrap: true,
+                                      itemBuilder: (context, index) {
+                                        return wardrobeProduct_ListTile(
+                                            productsAtColAndRow[index]);
+                                      },
+                                    ),
+                                    IconButton(
+                                        icon: Icon(Icons.add),
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                                  context,
+                                                  AddProductToDrawerScreen
+                                                      .routeName,
+                                                  arguments: DrawerPosition(
+                                                      wardrobeId:
+                                                          currentWardrobe!.id,
+                                                      column: column,
+                                                      row: row))
+                                              .then((value) {
+                                            // TODO: refresh
+                                          });
+                                        })
+                                  ]),
                                 );
                               });
                           //  ROW = index ~/ rows + 1;

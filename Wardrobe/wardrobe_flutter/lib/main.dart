@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:wardrobe_flutter/screens/add_product_to_drawer.dart';
 import 'package:wardrobe_flutter/screens/create_product.dart';
 import 'package:wardrobe_flutter/screens/create_wardrobe.dart';
 import 'package:wardrobe_flutter/screens/show_single_wardrobe_drawer.dart';
 import 'package:wardrobe_flutter/screens/authentication/login_screen.dart';
-import 'package:wardrobe_flutter/screens/show_products_in_drawer.dart';
 import 'package:wardrobe_flutter/screens/authentication/register_screen.dart';
-import 'package:wardrobe_flutter/screens/show_all_wardrobes_screen.dart';
+import 'package:wardrobe_flutter/views/showAllProductsView.dart';
+import 'package:wardrobe_flutter/views/show_all_wardrobes_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -78,13 +80,9 @@ class MyApp extends StatelessWidget {
                 builder: (context) => const CreateProductScreen(),
                 settings: routeSettings);
 
-          case ShowAllWardrobesScreen.routeName:
+          case ShowAllWardrobesView.routeName:
             return MaterialPageRoute(
-                builder: (context) => const ShowAllWardrobesScreen(),
-                settings: routeSettings);
-          case '/':
-            return MaterialPageRoute(
-                builder: (context) => const ShowAllWardrobesScreen(),
+                builder: (context) => const ShowAllWardrobesView(),
                 settings: routeSettings);
         }
       },
@@ -92,6 +90,9 @@ class MyApp extends StatelessWidget {
         ShowSingleWardrobeDrawerScreen.routeName: (context) =>
             ShowSingleWardrobeDrawerScreen(),
         CreateWardrobeScreen.routeName: (context) => CreateWardrobeScreen(),
+        AddProductToDrawerScreen.routeName: (context) =>
+            AddProductToDrawerScreen(),
+        '/': (context) => const MainHomePage(),
         // '/': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
         // '/login': (context) => const LoginScreen(),
         // '/register': (context) => RegisterScreen(),
@@ -100,6 +101,72 @@ class MyApp extends StatelessWidget {
         // // '/wardrobe/show': (context) => DrawersScreen(),
         // '/wardrobe/show/products': (context) => ProductsScreen()
       },
+    );
+  }
+}
+
+class MainHomePage extends StatefulWidget {
+  const MainHomePage({Key? key}) : super(key: key);
+
+  @override
+  _MainHomePageState createState() => _MainHomePageState();
+}
+
+class _MainHomePageState extends State<MainHomePage> {
+  int _selectedIndex = 0;
+  final List<Widget> _pages = <Widget>[
+    ShowAllWardrobesView(),
+    ShowAllProductsView()
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Wardrobe'),
+      ),
+      body: _pages.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Wardrobes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.smart_display),
+            label: 'Products',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: SpeedDial(
+        icon: Icons.add,
+        activeIcon: Icons.close,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.add),
+            label: 'Create new wardrobe',
+            onTap: () {
+              Navigator.pushNamed(context, CreateWardrobeScreen.routeName);
+            },
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.add),
+            label: 'Create new product',
+            onTap: () {
+              Navigator.pushNamed(context, CreateProductScreen.routeName);
+            },
+          ),
+        ],
+      ),
     );
   }
 }

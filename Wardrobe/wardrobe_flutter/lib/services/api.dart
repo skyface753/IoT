@@ -157,6 +157,27 @@ class ApiService {
     }
   }
 
+  static Future<bool> addProductToDrawer(
+      int productId, int wardrobeId, int column, int row, int number) async {
+    final response =
+        await http.post(Uri.parse(host + "/product/addProductToDrawer"), body: {
+      "productId": productId.toString(),
+      "wardrobeId": wardrobeId.toString(),
+      "column": column.toString(),
+      "row": row.toString(),
+      "number": number.toString(),
+    }, headers: {
+      "authorization": apiKey
+    });
+    print(response.body);
+    if (response.statusCode == 200) {
+      var returnResponse = json.decode(response.body);
+      print(returnResponse);
+      return returnResponse['success'];
+    } else {
+      return false;
+    }
+  }
   // static Future<List<Product>?> getProductsByDrawerId(String drawerId) async {
   //   try {
   //     final response = await http
