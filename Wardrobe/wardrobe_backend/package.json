@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
+    "adafruit-i2c-lcd": "^2.0.0",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
@@ -17,11 +19,12 @@
     "express-rate-limit": "^6.5.1",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
+    "lcd": "^3.1.1",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^2.3.3",
     "nodemon": "^2.0.19",
     "onoff": "^6.0.3",
-    "adafruit-i2c-lcd": "^2.0.0"
+    "raspberrypi-liquid-crystal": "^1.18.0"
   },
   "author": "",
   "license": "ISC"

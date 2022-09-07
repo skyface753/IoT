@@ -32,5 +32,5 @@ router.post(
 );
 router.post("/product/create", ProductService.createProduct);
 router.post("/product/addProductToDrawer", ProductService.addProductToDrawer);
-
+router.post("/product/lightLEDByProductId", ProductService.lightLEDByProductId);
 module.exports = router;

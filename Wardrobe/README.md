@@ -8,6 +8,13 @@ Based on [Kollion](https://www.kollino.de/elektronik/lichtschranke-mit-dem-ardui
 
 74HC132N or CD4093N-IC
 
+## DEV
+docker-compose-debug.yml -> lcd not working
+
+## PROD
+docker-compose.yml -> db & phpmyadmin
+node in wardrobe_backend -> backend (SUDO)
+
 ## Flutter
 
 ### Build

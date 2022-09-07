@@ -1,6 +1,8 @@
+const env = process.env;
+
 const config = {
   db: {
-    host: "db",
+    host: env.DB_HOST || 'localhost',
     user: "wardrobe_user",
     password: "wardrobe_pass",
     database: "wardrobe_db",

@@ -1,5 +1,5 @@
 const db = require("./db");
-const LedService = require("./led_service");
+const displayService = require("./display_service");
 
 const ProductService = {
   getAll: async (req, res) => {
@@ -61,7 +61,7 @@ const ProductService = {
     });
   },
   lightLEDByProductId: async (req, res) => {
-    let productId = req.params.productId;
+    let productId = req.body.productId;
     if (!productId) {
       res.json({
         success: false,
@@ -79,7 +79,22 @@ const ProductService = {
       });
       return;
     }
-    LedService.lightLEDByProductId(product[0].id);
+    let drawer = await db.query(
+      "SELECT pos_column, pos_row FROM `wardrobe_product_XREF` WHERE product_fk = ?",
+      [productId]
+    );
+    if (!drawer) {
+      res.json({
+        success: false,
+        message: "Product not found",
+      });
+      return;
+    }
+    displayService.lightUp(drawer, product[0].name);
+    res.json({
+      success: true,
+      message: "LED lit",
+    });
   },
   addProductToDrawer: async (req, res) => {
     let { productId, wardrobeId, column, row, number } = req.body;
