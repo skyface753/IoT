@@ -1,21 +1,20 @@
 var isAPi = false; // Is a Pi
 var lcd;
-try{
-
-  const LCD = require('raspberrypi-liquid-crystal');
-  lcd = new LCD( 1, 0x27, 16, 2 );
+try {
+  const LCD = require("raspberrypi-liquid-crystal");
+  lcd = new LCD(1, 0x27, 16, 2);
   lcd.beginSync();
   lcd.clearSync();
-  lcd.printSync( 'Hello' );
+  lcd.printSync("Hello");
   lcd.setCursorSync(0, 1);
-  lcd.printSync( 'World' );
-  
+  lcd.printSync("World");
+
   isAPi = true;
-}catch(e){
+} catch (e) {
+  console.log("JUST A PROD ERROR - not in debug mode");
   console.log(e);
   isAPi = false;
 }
-
 
 const db = require("./db");
 
@@ -25,13 +24,15 @@ const displayService = {
       console.log("Not a Pi - not lighting up");
       return;
     }
-    for(let i = 0; i < drawer.length; i++){
+    for (let i = 0; i < drawer.length; i++) {
       lcd.clearSync();
       lcd.setCursorSync(0, 0);
       lcd.printSync(productName);
       lcd.setCursorSync(0, 1);
-      lcd.printSync("Col: " + drawer[i].pos_column +" Row: " + drawer[i].pos_row );
-      
+      lcd.printSync(
+        "Col: " + drawer[i].pos_column + " Row: " + drawer[i].pos_row
+      );
+
       await sleep(3000);
     }
     lcd.clearSync();
@@ -39,7 +40,7 @@ const displayService = {
 };
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 module.exports = displayService;

@@ -115,7 +115,7 @@ class MainHomePage extends StatefulWidget {
 class _MainHomePageState extends State<MainHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = <Widget>[
-    ShowAllWardrobesView(),
+    const ShowAllWardrobesView(),
     ShowAllProductsView()
   ];
 

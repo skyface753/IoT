@@ -80,9 +80,26 @@ const ProductService = {
       return;
     }
     let drawer = await db.query(
-      "SELECT pos_column, pos_row FROM `wardrobe_product_XREF` WHERE product_fk = ?",
+      "SELECT wardrobe_fk, wardrobe.fname, pos_column, pos_row, wardrobe.columns, wardrobe.rows FROM `wardrobe_product_XREF` INNER JOIN wardrobe ON wardrobe_fk = wardrobe.id WHERE product_fk = ? ORDER BY `wardrobe_fk`",
       [productId]
     );
+    let drawerByWardrobe = {};
+    drawer.forEach((d) => {
+      if (!drawerByWardrobe[d.wardrobe_fk]) {
+        drawerByWardrobe[d.wardrobe_fk] = {
+          wardrobe_fk: d.wardrobe_fk,
+          fname: d.fname,
+          columns: d.columns,
+          rows: d.rows,
+          drawers: [],
+        };
+      }
+      drawerByWardrobe[d.wardrobe_fk].drawers.push({
+        pos_column: d.pos_column,
+        pos_row: d.pos_row,
+      });
+    });
+
     if (!drawer) {
       res.json({
         success: false,
@@ -94,6 +111,7 @@ const ProductService = {
     res.json({
       success: true,
       message: "LED lit",
+      drawerByWardrobe: drawerByWardrobe,
     });
   },
   addProductToDrawer: async (req, res) => {

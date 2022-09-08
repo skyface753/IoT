@@ -4,4 +4,4 @@ FROM node
 WORKDIR /usr/src/app
 
 EXPOSE 5000
-CMD ["sh", "-c", "rm -r node_modules; npm install ; npm start"]
+CMD ["sh", "-c", "rm -r node_modules; npm install ; npm run dev"]

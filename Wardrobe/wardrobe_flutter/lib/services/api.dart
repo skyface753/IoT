@@ -4,11 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:wardrobe_flutter/models/drawer.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
+import 'package:wardrobe_flutter/models/wardrobe_col_pos.dart';
 import 'package:wardrobe_flutter/models/wardrobe_products.dart';
 
+String hostname = "localhost";
+
 class ApiService {
-  static String serverPath = 'http://localhost:5000/file/upload';
-  static String host = "http://localhost:5000";
+  static String serverPath = 'http://' + hostname + ':5000/file/upload';
+  static String host = 'http://' + hostname + ':5000';
   static String apiKey =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpYXQiOjE2NjEyNjAzNTIsImV4cCI6MTY2Mzg1MjM1Mn0.Ww3tl2HDd8QHG7Hz5pl6wQ77kpPcX9eZcwFB54TY2hQ";
   static Future<List<Wardrobe>?> getAllWardrobes() async {
@@ -178,6 +181,83 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<List<WardrobePos>?> lightLEDByProductId(int productId) async {
+    final response = await http.post(
+        Uri.parse(host + "/product/lightLEDByProductId"),
+        body: {"productId": productId.toString()},
+        headers: {"authorization": apiKey});
+    // print(response.body);
+    if (response.statusCode == 200) {
+      var returnResponse = json.decode(response.body);
+      returnResponse = returnResponse['drawerByWardrobe'];
+      print(returnResponse);
+      Map<String, dynamic> map = returnResponse;
+      /*
+      {
+        "1": {
+            "wardrobe_fk": 1,
+            "columns": 2,
+            "rows": 4,
+            "drawers": [
+                {
+                    "pos_column": 1,
+                    "pos_row": 1
+                },
+                {
+                    "pos_column": 1,
+                    "pos_row": 2
+                }
+            ]
+        },
+        "2": {
+            "wardrobe_fk": 2,
+            "columns": 6,
+            "rows": 3,
+            "drawers": [
+                {
+                    "pos_column": 1,
+                    "pos_row": 1
+                }
+            ]
+        }
+    }
+      */
+      List<WardrobePos> wardrobePosList = [];
+      map.forEach((key, value) {
+        print("Key: $key");
+        print("Value: $value");
+        print("Value: ${value['drawers']}");
+        wardrobePosList.add(WardrobePos.fromJson(value));
+        // List<DrawerPos> drawerPosList = [];
+        // value['drawers'].forEach((drawer) {
+        //   drawerPosList.add(DrawerPos(
+        //       pos_column: drawer['pos_column'],
+        //       pos_row: drawer['pos_row'],
+        //       number: drawer['number']));
+        // });
+        // wardrobePosList.add(WardrobePos(
+        //     wardrobe_fk: value['wardrobe_fk'],
+        //     columns: value['columns'],
+        //     rows: value['rows'],
+        //     drawers: drawerPosList));
+      });
+      return wardrobePosList;
+      // List<WardrobePos> list = [];
+      // for (var i = 0; i < returnResponse.length; i++) {
+      //   list.add(WardrobePos.fromJson(returnResponse[i]));
+      // }
+      // return list;
+      // return returnResponse
+      //     .map<WardrobePos>((json) => WardrobePos.fromJson(json))
+      //     .toList();
+      // print(returnResponse);
+      // return returnResponse['drawer'];
+    } else {
+      return null;
+    }
+  }
+
   // static Future<List<Product>?> getProductsByDrawerId(String drawerId) async {
   //   try {
   //     final response = await http
