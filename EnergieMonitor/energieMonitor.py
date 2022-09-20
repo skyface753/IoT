@@ -34,7 +34,7 @@ def refreshDisplay(cityName, abundancePercent):
    display.lcd_display_string(cityName + " " + str(abundancePercent) + "%", 1)  # Write line of text to first line of display
 
 
-      
+
          
 def showDataOnDisplay(city):
    cityName = city.municipality.name
