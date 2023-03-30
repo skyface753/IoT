@@ -11,12 +11,14 @@ ListTile wardrobeProduct_ListTile(WardrobeProduct wardrobeProduct) {
       leading: SizedBox(
           width: 50,
           height: 50,
-          child: wardrobeProduct.imagePath != null
-              ? CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      ApiService.host + "/" + wardrobeProduct.imagePath!),
-                )
-              : CircleAvatar(
+          child:
+              //  wardrobeProduct.imagePathReplaceWithStorageID != null
+              // ? CircleAvatar(
+              //     backgroundImage: NetworkImage(
+              //         ApiService.host + "/" + wardrobeProduct.imagePath!),
+              //   )
+              // :
+              CircleAvatar(
                   backgroundImage:
                       AssetImage('images/No_image_available.svg.png'))));
 }

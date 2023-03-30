@@ -1,5 +1,5 @@
 class DrawerPosition {
-  final int wardrobeId;
+  final String wardrobeId;
   final int column;
   final int row;
 

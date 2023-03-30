@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+// import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/models/wardrobe_col_pos.dart';
 import 'package:wardrobe_flutter/services/api.dart';
@@ -26,7 +26,7 @@ class _ShowAllProductsViewState extends State<ShowAllProductsView> {
                 onTap: () async {
                   List<WardrobePos>? wardrobePos =
                       await ApiService.lightLEDByProductId(
-                          snapshot.data![index].id);
+                          snapshot.data![index].$id);
                   // PRINT
                   for (var i = 0; i < wardrobePos!.length; i++) {
                     print(wardrobePos[i].toString());
@@ -36,7 +36,7 @@ class _ShowAllProductsViewState extends State<ShowAllProductsView> {
                   //   print(wardrobeColRow[i].posColumn);
                   //   print(wardrobeColRow[i].posRow);
                   // }
-                  showBarModalBottomSheet(
+                  showModalBottomSheet(
                       context: context,
                       builder: (context) {
                         return Container(

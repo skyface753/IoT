@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:wardrobe_flutter/components/products_listtile.dart';
 import 'package:wardrobe_flutter/models/darwer_position.dart';
 import 'package:wardrobe_flutter/models/drawer.dart';
@@ -51,12 +50,13 @@ class ShowSingleWardrobeDrawerScreenState
     double itemHeight = (size.height - kToolbarHeight - 24) / 2;
     double itemWidth = size.width / 2;
     if (currentWardrobe != null) {
-      itemHeight = (size.height - kToolbarHeight - 24) / currentWardrobe.rows;
-      itemWidth = size.width / currentWardrobe.columns;
+      itemHeight =
+          (size.height - kToolbarHeight - 24) / currentWardrobe.maxRows;
+      itemWidth = size.width / currentWardrobe.maxColumns;
     }
     return Scaffold(
         appBar: AppBar(
-          title: Text(currentWardrobe?.fname ?? 'No wardrobe'),
+          title: Text(currentWardrobe?.fqdn ?? 'No wardrobe'),
         ),
         body: currentWardrobe == null
             ? Center(
@@ -64,23 +64,23 @@ class ShowSingleWardrobeDrawerScreenState
               )
             : FutureBuilder(
                 future: ApiService.getProductsByWardrobeId(
-                    currentWardrobe.id.toString()),
+                    currentWardrobe.$id.toString()),
                 builder:
                     (context, AsyncSnapshot<List<WardrobeProduct>?> snapshot) {
                   return GridView.count(
-                    crossAxisCount: currentWardrobe!.columns,
+                    crossAxisCount: currentWardrobe!.maxColumns,
                     // shrinkWrap: true,
                     childAspectRatio: itemWidth / itemHeight,
                     children: List.generate(
-                        currentWardrobe.rows * currentWardrobe.columns,
+                        currentWardrobe.maxRows * currentWardrobe.maxColumns,
                         (index) {
                       return InkWell(
                         onTap: () {
                           print(
-                              'column: ${index % currentWardrobe!.columns} row: ${index / currentWardrobe.columns}');
-                          int column = index % currentWardrobe.columns + 1;
-                          int row = index ~/ currentWardrobe.columns + 1;
-                          showBarModalBottomSheet(
+                              'column: ${index % currentWardrobe!.maxColumns} row: ${index / currentWardrobe.maxColumns}');
+                          int column = index % currentWardrobe.maxColumns + 1;
+                          int row = index ~/ currentWardrobe.maxColumns + 1;
+                          showModalBottomSheet(
                               context: context,
                               builder: (context) {
                                 List<WardrobeProduct> productsAtColAndRow =
@@ -116,7 +116,7 @@ class ShowSingleWardrobeDrawerScreenState
                                                       .routeName,
                                                   arguments: DrawerPosition(
                                                       wardrobeId:
-                                                          currentWardrobe!.id,
+                                                          currentWardrobe!.$id,
                                                       column: column,
                                                       row: row))
                                               .then((value) {

@@ -59,7 +59,7 @@ class _CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
               ),
             ],
           ),
-          RaisedButton(
+          TextButton(
             child: Text('Create'),
             onPressed: () async {
               if (await ApiService.createWardrobe(
@@ -75,7 +75,7 @@ class _CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
                     title: Text('Error'),
                     content: Text('Could not create wardrobe'),
                     actions: <Widget>[
-                      FlatButton(
+                      TextButton(
                         child: Text('Ok'),
                         onPressed: () {
                           Navigator.pop(context);

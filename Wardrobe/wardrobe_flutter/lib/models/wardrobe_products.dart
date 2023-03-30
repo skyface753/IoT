@@ -7,7 +7,7 @@ class WardrobeProduct extends Product {
 
   WardrobeProduct(int id, String name, String description, this.number,
       String imagePath, this.posColumn, this.posRow)
-      : super(id, name, description, imagePath, 0, 0);
+      : super(id, name, description, imagePath);
 
   WardrobeProduct.fromJson(Map<String, dynamic> json)
       : number = json['number'],

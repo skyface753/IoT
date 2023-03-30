@@ -16,7 +16,7 @@ class AddProductToDrawerScreen extends StatefulWidget {
       AddProductToDrawerScreenState();
 }
 
-late int wardrobeId;
+late String wardrobeId;
 late int column;
 late int row;
 
@@ -95,7 +95,7 @@ class AddProductToDrawerScreenState extends State<AddProductToDrawerScreen> {
                                       child: Text("Add"),
                                       onPressed: () async {
                                         await ApiService.addProductToDrawer(
-                                                allProducts.data![index].id,
+                                                allProducts.data![index].$id,
                                                 wardrobeId,
                                                 column,
                                                 row,

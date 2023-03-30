@@ -143,21 +143,21 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
   }
 
   uploadFileWeb() async {
-    final request = http.MultipartRequest(
-      "POST",
-      Uri.parse(ApiService.serverPath),
-    );
-    request.headers['Authorization'] = ApiService.apiKey;
-    // request.fields['customer_fk'] = customerID.toString();
+    // final request = http.MultipartRequest(
+    //   "POST",
+    //   Uri.parse(ApiService.serverPath),
+    // );
+    // request.headers['Authorization'] = ApiService.apiKey;
+    // // request.fields['customer_fk'] = customerID.toString();
 
-    request.files.add(http.MultipartFile(
-        "myFile", objFile!.readStream!, objFile!.size,
-        filename: objFile!.name));
+    // request.files.add(http.MultipartFile(
+    //     "myFile", objFile!.readStream!, objFile!.size,
+    //     filename: objFile!.name));
 
-    var resp = await request.send();
+    // var resp = await request.send();
 
-    _handleResponse(resp);
-    //------Read response
+    // _handleResponse(resp);
+    // //------Read response
     // String result = await resp.stream.bytesToString();
     // if (kDebugMode) {
     //   print(result);
@@ -168,34 +168,34 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
   }
 
   uploadFile(File fileForUpload, String? filename) async {
-    var stream = new http.ByteStream(fileForUpload.openRead());
-    stream.cast();
-    // var stream =
-    //     // ignore: deprecated_member_use
-    //     http.ByteStream(DelegatingStream.typed(fileForUpload.openRead()));
-    var length = await fileForUpload.length();
-    var uri = Uri.parse(ApiService.serverPath);
-    var request = http.MultipartRequest("POST", uri);
-    var fileNameforRequest = "";
-    if (filename != null) {
-      fileNameforRequest = filename;
-    } else {
-      fileNameforRequest = path.basename(fileForUpload.path);
-    }
-    var multipartFile = http.MultipartFile('myFile', stream, length,
-        filename: fileNameforRequest);
-    request.files.add(multipartFile);
+    // var stream = new http.ByteStream(fileForUpload.openRead());
+    // stream.cast();
+    // // var stream =
+    // //     // ignore: deprecated_member_use
+    // //     http.ByteStream(DelegatingStream.typed(fileForUpload.openRead()));
+    // var length = await fileForUpload.length();
+    // var uri = Uri.parse(ApiService.serverPath);
+    // var request = http.MultipartRequest("POST", uri);
+    // var fileNameforRequest = "";
+    // if (filename != null) {
+    //   fileNameforRequest = filename;
+    // } else {
+    //   fileNameforRequest = path.basename(fileForUpload.path);
+    // }
+    // var multipartFile = http.MultipartFile('myFile', stream, length,
+    //     filename: fileNameforRequest);
+    // request.files.add(multipartFile);
 
-    request.headers['Authorization'] = ApiService.apiKey;
-    // request.fields['customer_fk'] = customerID.toString();
+    // request.headers['Authorization'] = ApiService.apiKey;
+    // // request.fields['customer_fk'] = customerID.toString();
 
-    var response = await request.send();
-    _handleResponse(response);
-    // response.stream.transform(utf8.decoder).listen((value) {
-    //   setState(() {
-    //     uploadInProgress = false;
-    //   });
-    // });
+    // var response = await request.send();
+    // _handleResponse(response);
+    // // response.stream.transform(utf8.decoder).listen((value) {
+    // //   setState(() {
+    // //     uploadInProgress = false;
+    // //   });
+    // // });
   }
 
   _handleResponse(http.StreamedResponse response) async {

@@ -6,10 +6,17 @@ import 'package:wardrobe_flutter/screens/create_wardrobe.dart';
 import 'package:wardrobe_flutter/screens/show_single_wardrobe_drawer.dart';
 import 'package:wardrobe_flutter/screens/authentication/login_screen.dart';
 import 'package:wardrobe_flutter/screens/authentication/register_screen.dart';
+import 'package:wardrobe_flutter/services/api.dart';
 import 'package:wardrobe_flutter/views/showAllProductsView.dart';
 import 'package:wardrobe_flutter/views/show_all_wardrobes_view.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  appwriteClient
+      .setEndpoint('https://appwrite.skyface.de/v1')
+      .setProject('6425b268553b93ec8c55')
+      .setSelfSigned(status: false);
   runApp(const MyApp());
 }
 

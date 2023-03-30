@@ -1,16 +1,23 @@
+import 'package:appwrite/models.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 
 class Wardrobe {
-  int id;
-  String fname;
-  int columns;
-  int rows;
+  String $id;
+  String fqdn;
+  int maxColumns;
+  int maxRows;
 
-  Wardrobe(this.id, this.fname, this.columns, this.rows);
+  Wardrobe(this.$id, this.fqdn, this.maxColumns, this.maxRows);
 
   Wardrobe.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        fname = json['fname'],
-        columns = json['columns'],
-        rows = json['rows'];
+      : $id = json['id'],
+        fqdn = json['fqdn'],
+        maxColumns = json['max_columns'],
+        maxRows = json['max_rows'];
+
+  Wardrobe.fromAppwriteDocument(Document document)
+      : $id = document.$id,
+        fqdn = document.data['fqdn'],
+        maxColumns = document.data['max_columns'],
+        maxRows = document.data['max_rows'];
 }
