@@ -64,6 +64,40 @@ class ApiService {
 
   static Future<List<WardrobeProduct>?> getProductsByWardrobeId(
       String wardrobeId) async {
+    try {
+      final docs = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDbID,
+        collectionId: wardrobeProductXrefCollectionID,
+        queries: [
+          Query.equal("wardrobe_fk", wardrobeId),
+        ],
+      );
+      // {product_fk: 64269d26709933b1d7df, wardrobe_fk: 6425bfcbcdd7c255ded8, stow_column: 1, stow_row: 1, amount: 15, $id: 6426b0a3dd7298cf0467, $createdAt: 2023-03-31T10:06:27.907+00:00, $updatedAt: 2023-03-31T10:06:27.907+00:00, $permissions: [read("user:6425bf616245fd85be99"), update("user:6425bf616245fd85be99"), delete("user:6425bf616245fd85be99")], $collectionId: 6425b9a0aed622464ccf, $databaseId: 6425b6ba3e077a2ed4d4}
+      List<WardrobeProduct> products = [];
+      for (var doc in docs.documents) {
+        // Get the product
+        final productDoc = await appwriteDatabase.getDocument(
+          databaseId: wardrobeDbID,
+          collectionId: productCollectionID,
+          documentId: doc.data['product_fk'],
+        );
+        WardrobeProduct wardrobeProduct = WardrobeProduct(
+          description: productDoc.data['description'],
+          name: productDoc.data['name'],
+          id: productDoc.$id,
+          imagePath: productDoc.data['image_path'],
+          number: doc.data['amount'],
+          stowColumn: doc.data['stow_column'],
+          stowRow: doc.data['stow_row'],
+        );
+        products.add(wardrobeProduct);
+      }
+
+      return products;
+    } catch (e) {
+      print(e);
+      return Future.error("Error getting products");
+    }
     // try {
     //   final response =
     //       await http.post(Uri.parse(host + "/wardrobe/productsById"), body: {
@@ -159,7 +193,7 @@ class ApiService {
         databaseId: wardrobeDbID,
         collectionId: productCollectionID,
       );
-      print(docs);
+      // print(docs);
       return docs.documents
           .map<Product>((json) => Product.fromAppwriteDocument(json))
           .toList();
@@ -187,8 +221,25 @@ class ApiService {
     // }
   }
 
-  static Future<bool> createWardrobe(String name, int columns, int rows) async {
-    return true;
+  static Future<bool> createWardrobe(
+      String fqdn, int maxColumns, int maxRows) async {
+    try {
+      final response = await appwriteDatabase.createDocument(
+        databaseId: wardrobeDbID,
+        collectionId: wardrobeCollectionID,
+        documentId: ID.unique(),
+        data: {
+          "fqdn": fqdn,
+          "max_columns": maxColumns,
+          "max_rows": maxRows,
+        },
+      );
+      print(response);
+      return true;
+    } catch (e) {
+      print(e);
+      return Future.error("Error creating wardrobe");
+    }
     // final response =
     //     await http.post(Uri.parse(host + "/wardrobe/create"), body: {
     //   "fname": name,
@@ -208,8 +259,65 @@ class ApiService {
   }
 
   static Future<bool> addProductToDrawer(String productId, String wardrobeId,
-      int column, int row, int number) async {
-    return true;
+      int column, int row, int amount) async {
+    try {
+      // Check if product already exists in drawer
+      final exists = await appwriteDatabase.listDocuments(
+          databaseId: wardrobeDbID,
+          collectionId: wardrobeProductXrefCollectionID,
+          queries: [
+            Query.equal("product_fk", productId),
+            Query.equal("wardrobe_fk", wardrobeId),
+            Query.equal("stow_column", column),
+            Query.equal("stow_row", row),
+          ]);
+      if (exists.documents.isNotEmpty) {
+        // Update amount
+        final response = await appwriteDatabase.updateDocument(
+          databaseId: wardrobeDbID,
+          collectionId: wardrobeProductXrefCollectionID,
+          documentId: exists.documents[0].$id,
+          data: {
+            "amount": exists.documents[0].data["amount"] + amount,
+          },
+        );
+        print(response);
+        return true;
+      } else {
+        // Create new entry
+        final response = await appwriteDatabase.createDocument(
+          databaseId: wardrobeDbID,
+          collectionId: wardrobeProductXrefCollectionID,
+          documentId: ID.unique(),
+          data: {
+            "product_fk": productId,
+            "wardrobe_fk": wardrobeId,
+            "stow_column": column,
+            "stow_row": row,
+            "amount": amount,
+          },
+        );
+        print(response);
+        return true;
+      }
+      // final response = await appwriteDatabase.createDocument(
+      //   databaseId: wardrobeDbID,
+      //   collectionId: wardrobeProductXrefCollectionID,
+      //   documentId: ID.unique(),
+      //   data: {
+      //     "product_fk": productId,
+      //     "wardrobe_fk": wardrobeId,
+      //     "stow_column": column,
+      //     "stow_row": row,
+      //     "amount": amount,
+      //   },
+      // );
+      // print(response);
+      // return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
     // final response =
     //     await http.post(Uri.parse(host + "/product/addProductToDrawer"), body: {
     //   "productId": productId.toString(),
@@ -230,8 +338,32 @@ class ApiService {
     // }
   }
 
-  static Future<List<WardrobePos>?> lightLEDByProductId(
+  static Future<List<WardrobePos>?> getWardrobeProductPositions(
       String productId) async {
+    try {
+      final docs = await appwriteDatabase.listDocuments(
+          databaseId: wardrobeDbID,
+          collectionId: wardrobeProductXrefCollectionID,
+          queries: [
+            Query.equal("product_fk", productId),
+          ]);
+      List<String> wardrobeIds = docs.documents.map((e) => e.$id).toList();
+      final wardrobes = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDbID,
+        collectionId: wardrobeCollectionID,
+      );
+      List<WardrobePos> wardrobePos = [];
+      for (var doc in docs.documents) {
+        var wardrobe = wardrobes.documents
+            .firstWhere((element) => element.$id == doc.data["wardrobe_fk"]);
+        wardrobePos
+            .add(WardrobePos.fromAppwriteDocument(doc, wardrobe.data["fqdn"]));
+      }
+      return wardrobePos;
+    } catch (e) {
+      print(e);
+      return Future.error("Error getting wardrobes");
+    }
     // final response = await http.post(
     //     Uri.parse(host + "/product/lightLEDByProductId"),
     //     body: {"productId": productId.toString()},

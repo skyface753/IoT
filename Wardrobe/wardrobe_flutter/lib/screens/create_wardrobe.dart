@@ -72,8 +72,8 @@ class _CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Error'),
-                    content: Text('Could not create wardrobe'),
+                    title: Text('Error creating wardrobe'),
+                    content: Text('Check your permissions'),
                     actions: <Widget>[
                       TextButton(
                         child: Text('Ok'),

@@ -1,45 +1,52 @@
 // To Display, where a Product is located in the Wardrobe
 
+import 'package:appwrite/models.dart';
+
 class WardrobePos {
-  int wardrobeFk;
-  String fname;
-  int columns;
-  int rows;
-  List<ColRow> colRow;
+  String wardrobeFk;
+  String wardrobeFQDN;
+  String productFk;
+  int stowColumn;
+  int stowRow;
+  int amount;
 
   WardrobePos(
-      this.wardrobeFk, this.fname, this.columns, this.rows, this.colRow);
+      {required this.wardrobeFk,
+      required this.productFk,
+      required this.stowColumn,
+      required this.stowRow,
+      required this.amount,
+      required this.wardrobeFQDN});
 
-  WardrobePos.fromJson(Map<String, dynamic> json)
-      : wardrobeFk = json['wardrobe_fk'],
-        fname = json['fname'],
-        columns = json['columns'],
-        rows = json['rows'],
-        colRow = json['drawers']
-            .map<ColRow>((json) => ColRow.fromJson(json))
-            .toList();
-
-  @override
-  String toString() {
-    return "WardrobePos{wardrobeFk: $wardrobeFk, columns: $columns, rows: $rows, colRow: ${colRow.toString()}}";
-  }
-}
-
-class ColRow {
-  int pos_column;
-  int pos_row;
-
-  ColRow(this.pos_column, this.pos_row);
-
-  ColRow.fromJson(Map<String, dynamic> json)
-      : pos_column = json['pos_column'],
-        pos_row = json['pos_row'];
+  WardrobePos.fromAppwriteDocument(Document document, String fqdn)
+      : wardrobeFk = document.data['wardrobe_fk'],
+        productFk = document.data['product_fk'],
+        stowColumn = document.data['stow_column'],
+        stowRow = document.data['stow_row'],
+        amount = document.data['amount'],
+        wardrobeFQDN = fqdn;
 
   @override
   String toString() {
-    return "$pos_row, $pos_column";
+    return "WardrobePos{wardrobeFqdn: $wardrobeFQDN, col: $stowColumn, row: $stowRow, amount: $amount}";
   }
 }
+
+// class ColRow {
+//   int pos_column;
+//   int pos_row;
+
+//   ColRow(this.pos_column, this.pos_row);
+
+//   ColRow.fromJson(Map<String, dynamic> json)
+//       : pos_column = json['pos_column'],
+//         pos_row = json['pos_row'];
+
+//   @override
+//   String toString() {
+//     return "$pos_row, $pos_column";
+//   }
+// }
 
 // class WardrobeColRow {
 //   int wardrobeFk;

@@ -1,17 +1,30 @@
+import 'package:appwrite/models.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 
 class WardrobeProduct extends Product {
   int number; // Anzahl in Drawer
-  int posColumn;
-  int posRow;
+  int stowColumn;
+  int stowRow;
 
-  WardrobeProduct(String id, String name, String description, this.number,
-      String imagePath, this.posColumn, this.posRow)
+  WardrobeProduct(
+      {required String id,
+      required String name,
+      required String description,
+      required this.number,
+      String? imagePath,
+      required this.stowColumn,
+      required this.stowRow})
       : super(id, name, description, imagePath);
 
-  WardrobeProduct.fromJson(Map<String, dynamic> json)
-      : number = json['number'],
-        posColumn = json['pos_column'],
-        posRow = json['pos_row'],
-        super.fromJson(json);
+  // WardrobeProduct.fromJson(Map<String, dynamic> json)
+  //     : number = json['number'],
+  //       posColumn = json['pos_column'],
+  //       posRow = json['pos_row'],
+  //       super.fromJson(json);
+
+  WardrobeProduct.fromAppwriteDocument(Document document)
+      : number = document.data['amount'],
+        stowColumn = document.data['stow_column'],
+        stowRow = document.data['stow_row'],
+        super.fromAppwriteDocument(document);
 }

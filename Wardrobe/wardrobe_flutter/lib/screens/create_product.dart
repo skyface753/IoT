@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:appwrite/appwrite.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as path;
-import 'package:async/async.dart';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -17,15 +14,15 @@ class CreateProductScreen extends StatefulWidget {
 
   const CreateProductScreen({Key? key}) : super(key: key);
   @override
-  _CreateProductScreenState createState() => _CreateProductScreenState();
+  CreateProductScreenState createState() => CreateProductScreenState();
 }
 
-class _CreateProductScreenState extends State<CreateProductScreen> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
+class CreateProductScreenState extends State<CreateProductScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   File? _image;
   String? serverFileId;
-  bool withImage = false;
+  // bool withImage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +37,9 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
               decoration: const InputDecoration(
                 labelText: 'Name',
               ),
+              onChanged: (value) {
+                setState(() {});
+              },
             ),
             TextField(
               controller: _descriptionController,
@@ -47,18 +47,12 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                 labelText: 'Description',
               ),
             ),
-            Checkbox(
-                value: withImage,
-                onChanged: (value) {
-                  setState(() {
-                    withImage = value!;
-                  });
-                  // TODO: delete server file
-                  // Prevent onchange
-                  return;
-                }),
-            serverFileId != null
-                ? Text('Server file id: $serverFileId')
+            _image != null
+                ? Image.file(
+                    _image!,
+                    width: 100,
+                    height: 100,
+                  )
                 : Container(),
             IconButton(
                 onPressed: () async {
@@ -87,16 +81,22 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                   //   // User canceled the picker
                   // }
                 },
-                icon: Icon(Icons.add_a_photo)),
-            if (_image != null) Image.file(_image!),
+                icon: const Icon(Icons.add_a_photo)),
+            // if (_image != null) Image.file(_image!),
             ElevatedButton(
+                // Style disabled when name is empty
+                style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        _nameController.text.isEmpty
+                            ? Colors.grey
+                            : Colors.blue)),
                 onPressed: () async {
-                  if (withImage && fileForUpload == null) {
-                    print("No image selected");
+                  if (_nameController.text.isEmpty) {
+                    print("Name is empty");
                     return;
                   }
-                  if (!withImage) {
-                    print("Create Product");
+                  if (fileForUpload == null) {
+                    print("Create Product without image");
                     ApiService.createProduct(
                       _nameController.text,
                       _descriptionController.text,
@@ -149,7 +149,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                   //   }
                   // });
                 },
-                child: Text("Create Product"))
+                child: const Text("Create Product"))
           ],
         ));
   }
@@ -173,7 +173,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
         // setState(() {
         //   uploadInProgress = true;
         // });
-        // file = File(objFile!.name);
+        _image = File(objFile.name);
         // print(objFile!);
         fileForUpload =
             InputFile.fromBytes(bytes: objFile.bytes!, filename: objFile.name);
@@ -191,7 +191,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
         // setState(() {
         //   uploadInProgress = true;
         // });
-        // file = File(result.files.single.path!);
+        _image = File(result.files.single.path!);
         fileForUpload = InputFile.fromPath(
             path: result.files.single.path!,
             filename: result.files.single.name);
@@ -202,94 +202,19 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
       }
     }
     setState(() {
-      withImage = true;
+      // withImage = true;
     });
   }
 
   uploadFile(InputFile input) async {
     try {
       var response = await ApiService.uploadFile(input);
-      if (response != null) {
-        setState(() {
-          uploadInProgress = false;
-          serverFileId = response;
-        });
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  // uploadFileWeb() async {
-  //   // final request = http.MultipartRequest(
-  //   //   "POST",
-  //   //   Uri.parse(ApiService.serverPath),
-  //   // );
-  //   // request.headers['Authorization'] = ApiService.apiKey;
-  //   // // request.fields['customer_fk'] = customerID.toString();
-
-  //   // request.files.add(http.MultipartFile(
-  //   //     "myFile", objFile!.readStream!, objFile!.size,
-  //   //     filename: objFile!.name));
-
-  //   // var resp = await request.send();
-
-  //   // _handleResponse(resp);
-  //   // //------Read response
-  //   // String result = await resp.stream.bytesToString();
-  //   // if (kDebugMode) {
-  //   //   print(result);
-  //   // }
-  //   // // setState(() {
-  //   // //   uploadInProgress = false;
-  //   // // });
-  // }
-
-  // uploadFile(File fileForUpload, String? filename) async {
-  //   try{
-
-  //   }
-  //   // var stream = new http.ByteStream(fileForUpload.openRead());
-  //   // stream.cast();
-  //   // // var stream =
-  //   // //     // ignore: deprecated_member_use
-  //   // //     http.ByteStream(DelegatingStream.typed(fileForUpload.openRead()));
-  //   // var length = await fileForUpload.length();
-  //   // var uri = Uri.parse(ApiService.serverPath);
-  //   // var request = http.MultipartRequest("POST", uri);
-  //   // var fileNameforRequest = "";
-  //   // if (filename != null) {
-  //   //   fileNameforRequest = filename;
-  //   // } else {
-  //   //   fileNameforRequest = path.basename(fileForUpload.path);
-  //   // }
-  //   // var multipartFile = http.MultipartFile('myFile', stream, length,
-  //   //     filename: fileNameforRequest);
-  //   // request.files.add(multipartFile);
-
-  //   // request.headers['Authorization'] = ApiService.apiKey;
-  //   // // request.fields['customer_fk'] = customerID.toString();
-
-  //   // var response = await request.send();
-  //   // _handleResponse(response);
-  //   // // response.stream.transform(utf8.decoder).listen((value) {
-  //   // //   setState(() {
-  //   // //     uploadInProgress = false;
-  //   // //   });
-  //   // // });
-  // }
-
-  _handleResponse(http.StreamedResponse response) async {
-    if (response.statusCode == 200) {
-      var responseBody = await response.stream.bytesToString();
-      var responseJson = json.decode(responseBody);
-      print(responseJson);
       setState(() {
         uploadInProgress = false;
-        serverFileId = responseJson['fileId'];
+        serverFileId = response;
       });
-    } else {
-      print('Error status code: ${response.statusCode}');
+    } catch (e) {
+      print(e);
     }
   }
 }
