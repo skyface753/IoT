@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.wardrobe_flutter">
+    package="de.skyface753.wardrobe">
    <application
         android:label="wardrobe_flutter"
         android:name="${applicationName}"

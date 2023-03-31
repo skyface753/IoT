@@ -5,7 +5,7 @@ class WardrobeProduct extends Product {
   int posColumn;
   int posRow;
 
-  WardrobeProduct(int id, String name, String description, this.number,
+  WardrobeProduct(String id, String name, String description, this.number,
       String imagePath, this.posColumn, this.posRow)
       : super(id, name, description, imagePath);
 

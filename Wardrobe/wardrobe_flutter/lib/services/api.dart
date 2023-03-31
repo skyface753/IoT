@@ -11,12 +11,15 @@ import 'package:appwrite/appwrite.dart';
 Client appwriteClient = Client();
 Account appwriteAccount = Account(appwriteClient);
 Databases appwriteDatabase = Databases(appwriteClient);
+Storage appwriteStorage = Storage(appwriteClient);
 
 String wardrobeDbID = "6425b6ba3e077a2ed4d4";
 
-String wardrobeProductXrefCollectionID = "6425b9a0aed622464ccf";
-String procutCollectionID = "6425b84d23835cc3c652";
+String productCollectionID = "6425b84d23835cc3c652";
 String wardrobeCollectionID = "6425b6c71990c4516480";
+String wardrobeProductXrefCollectionID = "6425b9a0aed622464ccf";
+
+String product_image_BucketID = "64269512a77339ffe0cb";
 
 class ApiService {
   static Future<List<Wardrobe>?> getAllWardrobes() async {
@@ -84,8 +87,42 @@ class ApiService {
     // }
   }
 
+  static Future<String> uploadFile(InputFile file) async {
+    try {
+      final response = await appwriteStorage.createFile(
+          bucketId: product_image_BucketID, fileId: ID.unique(), file: file);
+      print(response);
+      return response.$id;
+    } catch (e) {
+      print(e);
+      return Future.error("Error uploading file");
+    }
+  }
+
   static Future<bool> createProduct(
-      String name, String description, int? imageFk) async {
+      String name, String description, String? imageFileID) async {
+    try {
+      final response = await appwriteDatabase.createDocument(
+        databaseId: wardrobeDbID,
+        collectionId: productCollectionID,
+        documentId: ID.unique(),
+        data: imageFileID != null
+            ? {
+                "name": name,
+                "description": description,
+                "imageFileID": imageFileID,
+              }
+            : {
+                "name": name,
+                "description": description,
+              },
+      );
+      print(response);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
     return true;
     // print("Name: $name");
     // print("Description: $description");
@@ -117,6 +154,19 @@ class ApiService {
   }
 
   static Future<List<Product>?> getAllProducts() async {
+    try {
+      final docs = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDbID,
+        collectionId: productCollectionID,
+      );
+      print(docs);
+      return docs.documents
+          .map<Product>((json) => Product.fromAppwriteDocument(json))
+          .toList();
+    } catch (e) {
+      print(e);
+      return Future.error("Error getting wardrobes");
+    }
     // try {
     //   final response = await http.post(Uri.parse(host + "/product/all"),
     //       body: {}, headers: {"authorization": apiKey});
@@ -157,8 +207,8 @@ class ApiService {
     // }
   }
 
-  static Future<bool> addProductToDrawer(
-      int productId, String wardrobeId, int column, int row, int number) async {
+  static Future<bool> addProductToDrawer(String productId, String wardrobeId,
+      int column, int row, int number) async {
     return true;
     // final response =
     //     await http.post(Uri.parse(host + "/product/addProductToDrawer"), body: {
@@ -180,7 +230,8 @@ class ApiService {
     // }
   }
 
-  static Future<List<WardrobePos>?> lightLEDByProductId(int productId) async {
+  static Future<List<WardrobePos>?> lightLEDByProductId(
+      String productId) async {
     // final response = await http.post(
     //     Uri.parse(host + "/product/lightLEDByProductId"),
     //     body: {"productId": productId.toString()},

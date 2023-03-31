@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:appwrite/appwrite.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:async/async.dart';
@@ -23,7 +24,8 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   File? _image;
-  int? serverFileId;
+  String? serverFileId;
+  bool withImage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +48,11 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
               ),
             ),
             Checkbox(
-                value: serverFileId != null,
+                value: withImage,
                 onChanged: (value) {
+                  setState(() {
+                    withImage = value!;
+                  });
                   // TODO: delete server file
                   // Prevent onchange
                   return;
@@ -85,19 +90,64 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                 icon: Icon(Icons.add_a_photo)),
             if (_image != null) Image.file(_image!),
             ElevatedButton(
-                onPressed: () {
-                  print("Create Product");
-                  ApiService.createProduct(
-                    _nameController.text,
-                    _descriptionController.text,
-                    serverFileId,
-                  ).then((wasSuccessful) {
-                    if (wasSuccessful) {
-                      Navigator.pop(context);
-                    } else {
-                      print("Error creating product");
+                onPressed: () async {
+                  if (withImage && fileForUpload == null) {
+                    print("No image selected");
+                    return;
+                  }
+                  if (!withImage) {
+                    print("Create Product");
+                    ApiService.createProduct(
+                      _nameController.text,
+                      _descriptionController.text,
+                      null,
+                    ).then((wasSuccessful) {
+                      if (wasSuccessful) {
+                        Navigator.pop(context);
+                      } else {
+                        print("Error creating product");
+                      }
+                    });
+                    return;
+                  } else {
+                    try {
+                      print("Upload Image");
+                      await uploadFile(fileForUpload!);
+                      if (serverFileId == null) {
+                        print("Error uploading image");
+                        return;
+                      }
+                      print("Create Product");
+                      ApiService.createProduct(
+                        _nameController.text,
+                        _descriptionController.text,
+                        serverFileId,
+                      ).then((wasSuccessful) {
+                        if (wasSuccessful) {
+                          Navigator.pop(context);
+                        } else {
+                          print("Error creating product");
+                        }
+                      });
+                    } catch (e) {
+                      print(e);
                     }
-                  });
+                  }
+
+                  // print("Upload Image");
+                  // uploadFile(fileForUpload);
+                  // print("Create Product");
+                  // ApiService.createProduct(
+                  //   _nameController.text,
+                  //   _descriptionController.text,
+                  //   serverFileId,
+                  // ).then((wasSuccessful) {
+                  //   if (wasSuccessful) {
+                  //     Navigator.pop(context);
+                  //   } else {
+                  //     print("Error creating product");
+                  //   }
+                  // });
                 },
                 child: Text("Create Product"))
           ],
@@ -105,24 +155,31 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
   }
 
   bool uploadInProgress = false;
-  PlatformFile? objFile;
-  late File file;
+  InputFile? fileForUpload;
+  // PlatformFile? objFile;
+  // late File file;
 
   Future<void> getFile() async {
     if (kIsWeb) {
       var result = await FilePicker.platform.pickFiles(
         withReadStream:
-            true, // this will return PlatformFile object with read stream#
+            false, // this will return PlatformFile object with read stream#
         type: FileType.image,
         allowMultiple: false,
         allowCompression: false,
       );
       if (result != null) {
-        setState(() {
-          uploadInProgress = true;
-          objFile = result.files.single;
-          uploadFileWeb();
-        });
+        final objFile = result.files.single;
+        // setState(() {
+        //   uploadInProgress = true;
+        // });
+        // file = File(objFile!.name);
+        // print(objFile!);
+        fileForUpload =
+            InputFile.fromBytes(bytes: objFile.bytes!, filename: objFile.name);
+        // uploadFile(input);
+      } else {
+        return;
       }
     } else {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -131,72 +188,96 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
         type: FileType.image,
       );
       if (result != null) {
-        setState(() {
-          uploadInProgress = true;
-        });
-        file = File(result.files.single.path!);
-        uploadFile(file, null);
+        // setState(() {
+        //   uploadInProgress = true;
+        // });
+        // file = File(result.files.single.path!);
+        fileForUpload = InputFile.fromPath(
+            path: result.files.single.path!,
+            filename: result.files.single.name);
+        // uploadFile(input);
       } else {
+        return;
         // User canceled the picker
       }
     }
+    setState(() {
+      withImage = true;
+    });
   }
 
-  uploadFileWeb() async {
-    // final request = http.MultipartRequest(
-    //   "POST",
-    //   Uri.parse(ApiService.serverPath),
-    // );
-    // request.headers['Authorization'] = ApiService.apiKey;
-    // // request.fields['customer_fk'] = customerID.toString();
-
-    // request.files.add(http.MultipartFile(
-    //     "myFile", objFile!.readStream!, objFile!.size,
-    //     filename: objFile!.name));
-
-    // var resp = await request.send();
-
-    // _handleResponse(resp);
-    // //------Read response
-    // String result = await resp.stream.bytesToString();
-    // if (kDebugMode) {
-    //   print(result);
-    // }
-    // // setState(() {
-    // //   uploadInProgress = false;
-    // // });
+  uploadFile(InputFile input) async {
+    try {
+      var response = await ApiService.uploadFile(input);
+      if (response != null) {
+        setState(() {
+          uploadInProgress = false;
+          serverFileId = response;
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
-  uploadFile(File fileForUpload, String? filename) async {
-    // var stream = new http.ByteStream(fileForUpload.openRead());
-    // stream.cast();
-    // // var stream =
-    // //     // ignore: deprecated_member_use
-    // //     http.ByteStream(DelegatingStream.typed(fileForUpload.openRead()));
-    // var length = await fileForUpload.length();
-    // var uri = Uri.parse(ApiService.serverPath);
-    // var request = http.MultipartRequest("POST", uri);
-    // var fileNameforRequest = "";
-    // if (filename != null) {
-    //   fileNameforRequest = filename;
-    // } else {
-    //   fileNameforRequest = path.basename(fileForUpload.path);
-    // }
-    // var multipartFile = http.MultipartFile('myFile', stream, length,
-    //     filename: fileNameforRequest);
-    // request.files.add(multipartFile);
+  // uploadFileWeb() async {
+  //   // final request = http.MultipartRequest(
+  //   //   "POST",
+  //   //   Uri.parse(ApiService.serverPath),
+  //   // );
+  //   // request.headers['Authorization'] = ApiService.apiKey;
+  //   // // request.fields['customer_fk'] = customerID.toString();
 
-    // request.headers['Authorization'] = ApiService.apiKey;
-    // // request.fields['customer_fk'] = customerID.toString();
+  //   // request.files.add(http.MultipartFile(
+  //   //     "myFile", objFile!.readStream!, objFile!.size,
+  //   //     filename: objFile!.name));
 
-    // var response = await request.send();
-    // _handleResponse(response);
-    // // response.stream.transform(utf8.decoder).listen((value) {
-    // //   setState(() {
-    // //     uploadInProgress = false;
-    // //   });
-    // // });
-  }
+  //   // var resp = await request.send();
+
+  //   // _handleResponse(resp);
+  //   // //------Read response
+  //   // String result = await resp.stream.bytesToString();
+  //   // if (kDebugMode) {
+  //   //   print(result);
+  //   // }
+  //   // // setState(() {
+  //   // //   uploadInProgress = false;
+  //   // // });
+  // }
+
+  // uploadFile(File fileForUpload, String? filename) async {
+  //   try{
+
+  //   }
+  //   // var stream = new http.ByteStream(fileForUpload.openRead());
+  //   // stream.cast();
+  //   // // var stream =
+  //   // //     // ignore: deprecated_member_use
+  //   // //     http.ByteStream(DelegatingStream.typed(fileForUpload.openRead()));
+  //   // var length = await fileForUpload.length();
+  //   // var uri = Uri.parse(ApiService.serverPath);
+  //   // var request = http.MultipartRequest("POST", uri);
+  //   // var fileNameforRequest = "";
+  //   // if (filename != null) {
+  //   //   fileNameforRequest = filename;
+  //   // } else {
+  //   //   fileNameforRequest = path.basename(fileForUpload.path);
+  //   // }
+  //   // var multipartFile = http.MultipartFile('myFile', stream, length,
+  //   //     filename: fileNameforRequest);
+  //   // request.files.add(multipartFile);
+
+  //   // request.headers['Authorization'] = ApiService.apiKey;
+  //   // // request.fields['customer_fk'] = customerID.toString();
+
+  //   // var response = await request.send();
+  //   // _handleResponse(response);
+  //   // // response.stream.transform(utf8.decoder).listen((value) {
+  //   // //   setState(() {
+  //   // //     uploadInProgress = false;
+  //   // //   });
+  //   // // });
+  // }
 
   _handleResponse(http.StreamedResponse response) async {
     if (response.statusCode == 200) {

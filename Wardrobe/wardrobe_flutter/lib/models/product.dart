@@ -1,19 +1,24 @@
+import 'package:appwrite/models.dart';
+
 class Product {
-  int $id;
+  String $id;
   String name;
   String description;
-  String? imagePathReplaceWithStorageID;
+  String? imageFileID;
   // int? borrowedNum; // borrowed_num;
   // int inStock;
 
-  Product(this.$id, this.name, this.description,
-      this.imagePathReplaceWithStorageID);
+  Product(this.$id, this.name, this.description, this.imageFileID);
 
   Product.fromJson(Map<String, dynamic> json)
       : $id = json['id'],
         name = json['name'],
         description = json['description'],
-        imagePathReplaceWithStorageID = json['imagePath'];
-  // borrowedNum = json['borrowed_num'],
-  // inStock = json['in_stock'] != null ? int.parse(json['in_stock']) : 0;
+        imageFileID = json['imageFileID'];
+
+  Product.fromAppwriteDocument(Document document)
+      : $id = document.$id,
+        name = document.data['name'],
+        description = document.data['description'],
+        imageFileID = document.data['imageFileID'];
 }
