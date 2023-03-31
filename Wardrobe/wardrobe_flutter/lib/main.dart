@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
               //       settings: routeSettings);
             }
           } catch (e) {
-            print(e);
+            // print(e);
           }
         }
         switch (settings.name!.toLowerCase()) {
@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
                 settings: routeSettings);
           case RegisterScreen.routeName:
             return MaterialPageRoute(
-                builder: (context) => RegisterScreen(),
+                builder: (context) => const RegisterScreen(),
                 settings: routeSettings);
           case CreateProductScreen.routeName:
             return MaterialPageRoute(
@@ -92,13 +92,14 @@ class MyApp extends StatelessWidget {
                 builder: (context) => const ShowAllWardrobesView(),
                 settings: routeSettings);
         }
+        return null;
       },
       routes: {
         ShowSingleWardrobeDrawerScreen.routeName: (context) =>
-            ShowSingleWardrobeDrawerScreen(),
+            const ShowSingleWardrobeDrawerScreen(),
         CreateWardrobeScreen.routeName: (context) => CreateWardrobeScreen(),
         AddProductToDrawerScreen.routeName: (context) =>
-            AddProductToDrawerScreen(),
+            const AddProductToDrawerScreen(),
         '/': (context) => const MainHomePage(),
         // '/': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
         // '/login': (context) => const LoginScreen(),
@@ -116,10 +117,10 @@ class MainHomePage extends StatefulWidget {
   const MainHomePage({Key? key}) : super(key: key);
 
   @override
-  _MainHomePageState createState() => _MainHomePageState();
+  MainHomePageState createState() => MainHomePageState();
 }
 
-class _MainHomePageState extends State<MainHomePage> {
+class MainHomePageState extends State<MainHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = <Widget>[
     const ShowAllWardrobesView(),
@@ -159,14 +160,14 @@ class _MainHomePageState extends State<MainHomePage> {
         activeIcon: Icons.close,
         children: [
           SpeedDialChild(
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
             label: 'Create new wardrobe',
             onTap: () {
               Navigator.pushNamed(context, CreateWardrobeScreen.routeName);
             },
           ),
           SpeedDialChild(
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
             label: 'Create new product',
             onTap: () {
               Navigator.pushNamed(context, CreateProductScreen.routeName);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wardrobe_flutter/components/products_ListTile.dart';
+import 'package:wardrobe_flutter/components/products_list_tile.dart';
 // import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/models/wardrobe_col_pos.dart';
@@ -28,7 +28,7 @@ class _ShowAllProductsViewState extends State<ShowAllProductsView> {
                 return ListTile(
                   title: Text(snapshot.data![index].name),
                   trailing: Text(snapshot.data![index].description),
-                  leading: Product_ListTile(
+                  leading: ProductListTile(
                     imageID: snapshot.data![index].imageFileID,
                   ),
                   onTap: () async {

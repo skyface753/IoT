@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:wardrobe_flutter/models/darwer_position.dart';
 import 'package:wardrobe_flutter/models/product.dart';
@@ -33,14 +34,16 @@ class AddProductToDrawerScreenState extends State<AddProductToDrawerScreen> {
       column = drawerPosition.column;
       row = drawerPosition.row;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
     if (drawerPosition == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text("Add product to drawer"),
+          title: const Text("Add product to drawer"),
         ),
-        body: Center(
+        body: const Center(
           child: Text("Error"),
         ),
       );
@@ -76,23 +79,23 @@ class AddProductToDrawerScreenState extends State<AddProductToDrawerScreen> {
                             builder: (BuildContext context) {
                               _numberController.text = "1";
                               return AlertDialog(
-                                title: Text("How many?"),
+                                title: const Text("How many?"),
                                 content: TextField(
                                   controller: _numberController,
                                   keyboardType: TextInputType.number,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     hintText: "Number",
                                   ),
                                 ),
                                 actions: [
                                   TextButton(
-                                    child: Text("Cancel"),
+                                    child: const Text("Cancel"),
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
                                   ),
                                   TextButton(
-                                      child: Text("Add"),
+                                      child: const Text("Add"),
                                       onPressed: () async {
                                         await ApiService.addProductToDrawer(
                                                 allProducts.data![index].$id,
@@ -110,14 +113,15 @@ class AddProductToDrawerScreenState extends State<AddProductToDrawerScreen> {
                                                         builder: (BuildContext
                                                             context) {
                                                           return AlertDialog(
-                                                            title:
-                                                                Text("Success"),
-                                                            content: Text(
+                                                            title: const Text(
+                                                                "Success"),
+                                                            content: const Text(
                                                                 "Product added to drawer"),
                                                             actions: [
                                                               TextButton(
                                                                 child:
-                                                                    Text("OK"),
+                                                                    const Text(
+                                                                        "OK"),
                                                                 onPressed: () {
                                                                   Navigator.of(
                                                                           context)
@@ -143,12 +147,14 @@ class AddProductToDrawerScreenState extends State<AddProductToDrawerScreen> {
                                                     builder:
                                                         (BuildContext context) {
                                                       return AlertDialog(
-                                                        title: Text("Error"),
-                                                        content: Text(
+                                                        title:
+                                                            const Text("Error"),
+                                                        content: const Text(
                                                             "Error adding product to drawer"),
                                                         actions: [
                                                           TextButton(
-                                                            child: Text("Ok"),
+                                                            child: const Text(
+                                                                "Ok"),
                                                             onPressed: () {
                                                               Navigator.of(
                                                                       context)
@@ -169,7 +175,7 @@ class AddProductToDrawerScreenState extends State<AddProductToDrawerScreen> {
                 },
               );
             } else {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
           }),
       // Center(

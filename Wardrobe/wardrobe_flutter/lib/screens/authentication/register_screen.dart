@@ -1,31 +1,29 @@
-import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
-import 'package:appwrite/appwrite.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
-// ignore: must_be_immutable
 class RegisterScreen extends StatefulWidget {
   static const routeName = '/register';
   static String id = '/RegisterPage';
 
+  const RegisterScreen({super.key});
+
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _confirmPasswordController = TextEditingController();
-
-  bool _showSpinner = false;
+class RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool _wrongEmail = false;
   bool _wrongPassword = false;
 
   String _emailText = 'Please use a valid email';
-  String _passwordText = 'Please use a strong password';
+  final String _passwordText = 'Please use a strong password';
 
   @override
   Widget build(BuildContext context) {
@@ -39,19 +37,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
           //   child: Image.asset('assets/images/background.png'),
           // ),
           Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
                 top: 60.0, bottom: 20.0, left: 20.0, right: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Register',
                   style: TextStyle(fontSize: 50.0),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  children: const [
                     Text(
                       'Lets get',
                       style: TextStyle(fontSize: 30.0),
@@ -67,12 +65,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     TextField(
                       keyboardType: TextInputType.name,
                       controller: _nameController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Full Name',
                         labelText: 'Full Name',
                       ),
                     ),
-                    SizedBox(height: 20.0),
+                    const SizedBox(height: 20.0),
                     TextField(
                       keyboardType: TextInputType.emailAddress,
                       controller: _emailController,
@@ -81,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         errorText: _wrongEmail ? _emailText : null,
                       ),
                     ),
-                    SizedBox(height: 20.0),
+                    const SizedBox(height: 20.0),
                     TextField(
                       obscureText: true,
                       keyboardType: TextInputType.visiblePassword,
@@ -91,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         errorText: _wrongPassword ? _passwordText : null,
                       ),
                     ),
-                    SizedBox(height: 20.0),
+                    const SizedBox(height: 20.0),
                     TextField(
                       obscureText: true,
                       keyboardType: TextInputType.visiblePassword,
@@ -101,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         errorText: _wrongPassword ? _passwordText : null,
                       ),
                     ),
-                    SizedBox(height: 10.0),
+                    const SizedBox(height: 10.0),
                   ],
                 ),
                 ElevatedButton(
@@ -118,23 +116,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return;
                     }
                     try {
-                      print("q");
                       if (await ApiService.register(
                           _nameController.text, _passwordController.text)) {
-                        print("q");
                         await SharedPreferences.getInstance().then((value) => {
                               value.setBool('isLoggedIn', true),
                               Navigator.pushReplacementNamed(
                                   context, '/wardrobes')
                             });
                       } else {
-                        print("q");
                         setState(() {
                           _wrongEmail = true;
                         });
                       }
                     } catch (e) {
-                      print(e);
                       setState(() {
                         _wrongEmail = true;
                         _emailText =
@@ -142,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       });
                     }
                   },
-                  child: Text(
+                  child: const Text(
                     'Register',
                     style: TextStyle(fontSize: 25.0, color: Colors.white),
                   ),
@@ -232,7 +226,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       'Already have an account?',
                       style: TextStyle(fontSize: 25.0),
                     ),
@@ -240,7 +234,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onTap: () {
                         Navigator.pushReplacementNamed(context, '/login');
                       },
-                      child: Text(
+                      child: const Text(
                         ' Sign In',
                         style: TextStyle(fontSize: 25.0, color: Colors.blue),
                       ),

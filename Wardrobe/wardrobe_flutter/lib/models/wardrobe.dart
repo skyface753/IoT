@@ -1,5 +1,4 @@
 import 'package:appwrite/models.dart';
-import 'package:wardrobe_flutter/models/product.dart';
 
 class Wardrobe {
   String $id;

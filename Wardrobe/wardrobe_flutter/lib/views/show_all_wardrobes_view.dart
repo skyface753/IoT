@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
-import 'package:wardrobe_flutter/screens/authentication/login_screen.dart';
-import 'package:wardrobe_flutter/screens/create_product.dart';
-import 'package:wardrobe_flutter/screens/create_wardrobe.dart';
 import 'package:wardrobe_flutter/screens/show_single_wardrobe_drawer.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
@@ -35,7 +31,7 @@ class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
                 onPressed: () async {
                   await loginDebugAccount();
                 },
-                child: Text('Login'),
+                child: const Text('Login'),
               ),
             ],
           );
@@ -67,7 +63,7 @@ class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
             ),
           );
         } else {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }

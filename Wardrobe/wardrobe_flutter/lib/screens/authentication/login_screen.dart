@@ -1,5 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wardrobe_flutter/services/api.dart';
@@ -37,7 +37,9 @@ class LoginScreenState extends State<LoginScreen> {
       setState(() {
         _btnController.error();
       });
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -71,7 +73,7 @@ class LoginScreenState extends State<LoginScreen> {
               onSubmitted: (value) => login(),
             ),
             _btnController.currentState == ButtonState.error
-                ? Text('Invalid email or password')
+                ? const Text('Invalid email or password')
                 : Container(),
             RoundedLoadingButton(
               controller: _btnController,
@@ -100,7 +102,7 @@ class LoginScreenState extends State<LoginScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'Don\'t have an account?',
                   style: TextStyle(fontSize: 25.0),
                 ),
@@ -108,7 +110,7 @@ class LoginScreenState extends State<LoginScreen> {
                   onTap: () {
                     Navigator.pushNamed(context, '/register');
                   },
-                  child: Text(
+                  child: const Text(
                     ' Sign Up',
                     style: TextStyle(fontSize: 25.0, color: Colors.blue),
                   ),

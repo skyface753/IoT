@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:appwrite/appwrite.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -56,7 +54,6 @@ class CreateProductScreenState extends State<CreateProductScreen> {
                 : Container(),
             IconButton(
                 onPressed: () async {
-                  print("Add Image");
                   getFile();
                   // FilePickerResult? result = await FilePicker.platform
                   //     .pickFiles(
@@ -92,11 +89,9 @@ class CreateProductScreenState extends State<CreateProductScreen> {
                             : Colors.blue)),
                 onPressed: () async {
                   if (_nameController.text.isEmpty) {
-                    print("Name is empty");
                     return;
                   }
                   if (fileForUpload == null) {
-                    print("Create Product without image");
                     ApiService.createProduct(
                       _nameController.text,
                       _descriptionController.text,
@@ -104,20 +99,15 @@ class CreateProductScreenState extends State<CreateProductScreen> {
                     ).then((wasSuccessful) {
                       if (wasSuccessful) {
                         Navigator.pop(context);
-                      } else {
-                        print("Error creating product");
-                      }
+                      } else {}
                     });
                     return;
                   } else {
                     try {
-                      print("Upload Image");
                       await uploadFile(fileForUpload!);
                       if (serverFileId == null) {
-                        print("Error uploading image");
                         return;
                       }
-                      print("Create Product");
                       ApiService.createProduct(
                         _nameController.text,
                         _descriptionController.text,
@@ -125,12 +115,24 @@ class CreateProductScreenState extends State<CreateProductScreen> {
                       ).then((wasSuccessful) {
                         if (wasSuccessful) {
                           Navigator.pop(context);
-                        } else {
-                          print("Error creating product");
-                        }
+                        } else {}
                       });
                     } catch (e) {
-                      print(e);
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text("Error"),
+                              content: const Text("Error uploading image"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("Ok"))
+                              ],
+                            );
+                          });
                     }
                   }
 
@@ -213,8 +215,6 @@ class CreateProductScreenState extends State<CreateProductScreen> {
         uploadInProgress = false;
         serverFileId = response;
       });
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 }

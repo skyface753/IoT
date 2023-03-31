@@ -1,7 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:wardrobe_flutter/components/products_listtile.dart';
 import 'package:wardrobe_flutter/models/darwer_position.dart';
-import 'package:wardrobe_flutter/models/drawer.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
 import 'package:wardrobe_flutter/models/wardrobe_products.dart';
 import 'package:wardrobe_flutter/screens/add_product_to_drawer.dart';
@@ -43,7 +42,9 @@ class ShowSingleWardrobeDrawerScreenState
       currentWardrobe = ModalRoute.of(context)!.settings.arguments as Wardrobe;
       // _getWardrobeProducts(currentWardrobe.id);
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
     var size = MediaQuery.of(context).size;
 /*24 is for notification bar on Android*/
@@ -59,7 +60,7 @@ class ShowSingleWardrobeDrawerScreenState
           title: Text(currentWardrobe?.fqdn ?? 'No wardrobe'),
         ),
         body: currentWardrobe == null
-            ? Center(
+            ? const Center(
                 child: Text('No wardrobe selected'),
               )
             : FutureBuilder(
@@ -67,9 +68,11 @@ class ShowSingleWardrobeDrawerScreenState
                     currentWardrobe.$id.toString()),
                 builder:
                     (context, AsyncSnapshot<List<WardrobeProduct>?> snapshot) {
-                  print("HI");
+                  if (kDebugMode) {
+                    print("HI");
+                  }
                   if (snapshot.hasError) {
-                    return Center(child: Text("Error"));
+                    return const Center(child: Text("Error"));
                   }
                   if (snapshot.hasData) {
                     return GridView.count(
@@ -82,9 +85,12 @@ class ShowSingleWardrobeDrawerScreenState
                           (index) {
                         return InkWell(
                           onTap: () {
-                            print(
-                                'column: ${index % currentWardrobe!.maxColumns} row: ${index / currentWardrobe.maxColumns}');
-                            int column = index % currentWardrobe.maxColumns + 1;
+                            if (kDebugMode) {
+                              print(
+                                  'column: ${index % currentWardrobe!.maxColumns} row: ${index / currentWardrobe.maxColumns}');
+                            }
+                            int column =
+                                index % currentWardrobe!.maxColumns + 1;
                             int row = index ~/ currentWardrobe.maxColumns + 1;
                             showModalBottomSheet(
                                 context: context,
@@ -100,7 +106,7 @@ class ShowSingleWardrobeDrawerScreenState
                                     print(product.name);
                                   }
                                   // return Text("HI");
-                                  return Container(
+                                  return SizedBox(
                                     height: MediaQuery.of(context).size.height *
                                         0.8,
                                     child: Column(children: [
@@ -118,15 +124,13 @@ class ShowSingleWardrobeDrawerScreenState
                                                 productsAtColAndRow[index]
                                                     .description
                                                     .toString()),
-                                            trailing: Text("Anzahl: " +
-                                                productsAtColAndRow[index]
-                                                    .number
-                                                    .toString()),
+                                            trailing: Text(
+                                                "Anzahl: ${productsAtColAndRow[index].number}"),
                                           );
                                         },
                                       ),
                                       IconButton(
-                                          icon: Icon(Icons.add),
+                                          icon: const Icon(Icons.add),
                                           onPressed: () {
                                             Navigator.pushNamed(
                                                     context,

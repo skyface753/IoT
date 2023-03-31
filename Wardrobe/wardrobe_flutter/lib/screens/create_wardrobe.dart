@@ -4,11 +4,13 @@ import 'package:wardrobe_flutter/services/api.dart';
 
 class CreateWardrobeScreen extends StatefulWidget {
   static const String routeName = '/wardrobe/create';
+
+  const CreateWardrobeScreen({super.key});
   @override
-  _CreateWardrobeScreenState createState() => _CreateWardrobeScreenState();
+  CreateWardrobeScreenState createState() => CreateWardrobeScreenState();
 }
 
-class _CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
+class CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
   final TextEditingController _fnameController = TextEditingController();
   final TextEditingController _columnsController =
       TextEditingController(text: '1');
@@ -19,20 +21,20 @@ class _CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Wardrobe'),
+        title: const Text('Create Wardrobe'),
       ),
       body: Column(
         children: [
           TextField(
             controller: _fnameController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Name',
             ),
           ),
           Row(
             children: [
-              Text('Columns'),
-              SizedBox(width: 10),
+              const Text('Columns'),
+              const SizedBox(width: 10),
               Expanded(
                 child: TextField(
                   controller: _columnsController,
@@ -46,8 +48,8 @@ class _CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
           ),
           Row(
             children: [
-              Text('Rows'),
-              SizedBox(width: 10),
+              const Text('Rows'),
+              const SizedBox(width: 10),
               Expanded(
                 child: TextField(
                   controller: _rowsController,
@@ -60,7 +62,7 @@ class _CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
             ],
           ),
           TextButton(
-            child: Text('Create'),
+            child: const Text('Create'),
             onPressed: () async {
               if (await ApiService.createWardrobe(
                 _fnameController.text,
@@ -72,11 +74,11 @@ class _CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Error creating wardrobe'),
-                    content: Text('Check your permissions'),
+                    title: const Text('Error creating wardrobe'),
+                    content: const Text('Check your permissions'),
                     actions: <Widget>[
                       TextButton(
-                        child: Text('Ok'),
+                        child: const Text('Ok'),
                         onPressed: () {
                           Navigator.pop(context);
                         },

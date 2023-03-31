@@ -1,7 +1,3 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-import 'package:wardrobe_flutter/models/drawer.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
 import 'package:wardrobe_flutter/models/wardrobe_col_pos.dart';
@@ -19,7 +15,7 @@ String productCollectionID = "6425b84d23835cc3c652";
 String wardrobeCollectionID = "6425b6c71990c4516480";
 String wardrobeProductXrefCollectionID = "6425b9a0aed622464ccf";
 
-String product_image_BucketID = "64269512a77339ffe0cb";
+String productImageBucketID = "64269512a77339ffe0cb";
 
 class ApiService {
   static Future<List<Wardrobe>?> getAllWardrobes() async {
@@ -124,7 +120,7 @@ class ApiService {
   static Future<String> uploadFile(InputFile file) async {
     try {
       final response = await appwriteStorage.createFile(
-          bucketId: product_image_BucketID, fileId: ID.unique(), file: file);
+          bucketId: productImageBucketID, fileId: ID.unique(), file: file);
       print(response);
       return response.$id;
     } catch (e) {
@@ -157,7 +153,6 @@ class ApiService {
       print(e);
       return false;
     }
-    return true;
     // print("Name: $name");
     // print("Description: $description");
     // print("Image_fk: $imageFk");
@@ -347,7 +342,6 @@ class ApiService {
           queries: [
             Query.equal("product_fk", productId),
           ]);
-      List<String> wardrobeIds = docs.documents.map((e) => e.$id).toList();
       final wardrobes = await appwriteDatabase.listDocuments(
         databaseId: wardrobeDbID,
         collectionId: wardrobeCollectionID,
