@@ -16,12 +16,6 @@ class WardrobeProduct extends Product {
       required this.stowRow})
       : super(id, name, description, imagePath);
 
-  // WardrobeProduct.fromJson(Map<String, dynamic> json)
-  //     : number = json['number'],
-  //       posColumn = json['pos_column'],
-  //       posRow = json['pos_row'],
-  //       super.fromJson(json);
-
   WardrobeProduct.fromAppwriteDocument(Document document)
       : number = document.data['amount'],
         stowColumn = document.data['stow_column'],

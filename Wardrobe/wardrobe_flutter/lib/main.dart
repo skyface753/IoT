@@ -51,23 +51,7 @@ class MyApp extends StatelessWidget {
             int questionMarkIndex = settings.name!.toLowerCase().indexOf('?');
             switch (
                 settings.name!.toLowerCase().substring(0, questionMarkIndex)) {
-              // case DrawersScreen.routeName:
-              //   final wardrobeId =
-              //       Uri.parse(settings.name!).queryParameters['wardrobeId'];
-              //   return MaterialPageRoute(
-              //     builder: (context) => DrawersScreen(
-              //       wardrobeId!,
-              //     ),
-              //     settings: routeSettings,
-              //   );
-              // case ShowProductsInDrawerScreen.routeName:
-              //   final drawerId =
-              //       Uri.parse(settings.name!).queryParameters['drawerId'];
-              //   return MaterialPageRoute(
-              //       builder: (context) => ShowProductsInDrawerScreen(
-              //             drawerId!,
-              //           ),
-              //       settings: routeSettings);
+              
             }
           } catch (e) {
             // print(e);

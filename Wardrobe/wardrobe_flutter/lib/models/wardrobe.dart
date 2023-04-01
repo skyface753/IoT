@@ -8,12 +8,6 @@ class Wardrobe {
 
   Wardrobe(this.$id, this.fqdn, this.maxColumns, this.maxRows);
 
-  Wardrobe.fromJson(Map<String, dynamic> json)
-      : $id = json['id'],
-        fqdn = json['fqdn'],
-        maxColumns = json['max_columns'],
-        maxRows = json['max_rows'];
-
   Wardrobe.fromAppwriteDocument(Document document)
       : $id = document.$id,
         fqdn = document.data['fqdn'],

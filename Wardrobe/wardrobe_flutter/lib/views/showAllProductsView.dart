@@ -1,3 +1,4 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:wardrobe_flutter/components/products_list_tile.dart';
 // import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -6,11 +7,26 @@ import 'package:wardrobe_flutter/models/wardrobe_col_pos.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
 class ShowAllProductsView extends StatefulWidget {
+  const ShowAllProductsView({super.key});
+
   @override
-  _ShowAllProductsViewState createState() => _ShowAllProductsViewState();
+  ShowAllProductsViewState createState() => ShowAllProductsViewState();
 }
 
-class _ShowAllProductsViewState extends State<ShowAllProductsView> {
+class ShowAllProductsViewState extends State<ShowAllProductsView> {
+  @override
+  void initState() {
+    final realtime = Realtime(appwriteClient);
+    final subscription = realtime.subscribe([
+      'databases.$wardrobeDatabaseID.collections.$productCollectionID.documents'
+    ]);
+    subscription.stream.listen((event) {
+      print(event);
+      setState(() {});
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -64,7 +80,7 @@ class _ShowAllProductsViewState extends State<ShowAllProductsView> {
                                 // }
                                 return ListTile(
                                   title: Text(
-                                      "${wardrobePos[index].wardrobeFQDN} - ${wardrobePos[index].stowColumn}:${wardrobePos[index].stowRow}"),
+                                      "${wardrobePos[index].wardrobeFQDN} - ${wardrobePos[index].stowColumn}:${wardrobePos[index].stowRow} -> ${wardrobePos[index].amount}x"),
                                   // trailing: Text(text),
                                   // trailing: Text(
                                   //     wardrobePos[index].posColumn.toString() +

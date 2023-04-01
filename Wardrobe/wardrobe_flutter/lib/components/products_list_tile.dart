@@ -22,8 +22,12 @@ class ProductListTileState extends State<ProductListTile> {
         height: 50,
         child: widget.imageID != null
             ? FutureBuilder(
-                future: appwriteStorage.getFilePreview(
-                    bucketId: productImageBucketID, fileId: widget.imageID!),
+                future: appwriteStorage
+                    .getFilePreview(
+                        bucketId: productImageBucketID, fileId: widget.imageID!)
+                    .catchError((error) {
+                  print(error);
+                }),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     imageFile = Image.memory(snapshot.data as Uint8List);

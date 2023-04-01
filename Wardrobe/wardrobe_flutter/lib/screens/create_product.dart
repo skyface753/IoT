@@ -5,6 +5,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:heic_to_jpg/heic_to_jpg.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
 class CreateProductScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class CreateProductScreenState extends State<CreateProductScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   File? _image;
-  String? serverFileId;
+  // String? serverFileId;
   // bool withImage = false;
 
   @override
@@ -104,18 +105,35 @@ class CreateProductScreenState extends State<CreateProductScreen> {
                     return;
                   } else {
                     try {
-                      await uploadFile(fileForUpload!);
-                      if (serverFileId == null) {
-                        return;
+                      String bucketFileID = await uploadFile(fileForUpload!);
+                      if (bucketFileID.isEmpty) {
+                        throw Exception("Something went wrong");
                       }
                       ApiService.createProduct(
                         _nameController.text,
                         _descriptionController.text,
-                        serverFileId,
+                        bucketFileID,
                       ).then((wasSuccessful) {
                         if (wasSuccessful) {
                           Navigator.pop(context);
                         } else {}
+                      }).catchError((e) {
+                        // TODO: Delete the file from the bucket
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Error"),
+                                content: const Text("Error creating product"),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text("Ok"))
+                                ],
+                              );
+                            });
                       });
                     } catch (e) {
                       showDialog(
@@ -156,7 +174,7 @@ class CreateProductScreenState extends State<CreateProductScreen> {
         ));
   }
 
-  bool uploadInProgress = false;
+  // bool uploadInProgress = false;
   InputFile? fileForUpload;
   // PlatformFile? objFile;
   // late File file;
@@ -190,13 +208,25 @@ class CreateProductScreenState extends State<CreateProductScreen> {
         type: FileType.image,
       );
       if (result != null) {
-        // setState(() {
-        //   uploadInProgress = true;
-        // });
-        _image = File(result.files.single.path!);
-        fileForUpload = InputFile.fromPath(
-            path: result.files.single.path!,
-            filename: result.files.single.name);
+        String fileExtension = result.files.single.extension!;
+        if (fileExtension == 'heic') {
+          print('convert to jpeg');
+          String? jpegPath = await HeicToJpg.convert(result.files.single.path!);
+          if (jpegPath == null) {
+            print('error converting');
+            return;
+          }
+          File file = File(jpegPath);
+          fileExtension = 'jpeg';
+          _image = file;
+          fileForUpload = InputFile.fromPath(
+              path: file.path, filename: '${result.files.single.name}.jpeg');
+        } else {
+          _image = File(result.files.single.path!);
+          fileForUpload = InputFile.fromPath(
+              path: result.files.single.path!,
+              filename: result.files.single.name);
+        }
         // uploadFile(input);
       } else {
         return;
@@ -208,13 +238,7 @@ class CreateProductScreenState extends State<CreateProductScreen> {
     });
   }
 
-  uploadFile(InputFile input) async {
-    try {
-      var response = await ApiService.uploadFile(input);
-      setState(() {
-        uploadInProgress = false;
-        serverFileId = response;
-      });
-    } catch (e) {}
+  Future<String> uploadFile(InputFile input) async {
+    return await ApiService.uploadFile(input);
   }
 }
