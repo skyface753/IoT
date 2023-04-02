@@ -1,0 +1,20 @@
+{
+  "projectId": "6425b268553b93ec8c55",
+  "projectName": "Wardrobe",
+  "functions": [
+    {
+      "$id": "64284b1714028d77095d",
+      "name": "verify_product_picture",
+      "runtime": "node-16.0",
+      "path": "functions/verify_product_picture",
+      "entrypoint": "src/index.js",
+      "ignore": ["node_modules", ".npm"],
+      "execute": [],
+      "events": [
+        "databases.6425b6ba3e077a2ed4d4.collections.6425b84d23835cc3c652.documents.*.create"
+      ],
+      "schedule": "",
+      "timeout": 15
+    }
+  ]
+}

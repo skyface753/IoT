@@ -40,6 +40,7 @@ dependencies:
   # modal_bottom_sheet: ^2.1.0
   flutter_speed_dial: ^6.0.0
   appwrite: ^8.2.0
+  heic_to_jpg: ^0.2.0
 
 dev_dependencies:
   flutter_test:
