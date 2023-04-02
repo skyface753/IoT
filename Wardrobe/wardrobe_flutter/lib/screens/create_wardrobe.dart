@@ -42,6 +42,9 @@ class CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly
                   ], // Only numbers can be entered
+                  onChanged: (value) {
+                    setState(() {});
+                  },
                 ),
               ),
             ],
@@ -57,6 +60,9 @@ class CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly
                   ], // Only numbers can be entered
+                  onChanged: (value) {
+                    setState(() {});
+                  },
                 ),
               ),
             ],
@@ -64,6 +70,63 @@ class CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
           TextButton(
             child: const Text('Create'),
             onPressed: () async {
+              if (_fnameController.text.isEmpty) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Error creating wardrobe'),
+                    content: const Text('Name cannot be empty'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Ok'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+                return;
+              }
+              if (int.tryParse(_columnsController.text) == null ||
+                  (int.tryParse(_columnsController.text) ?? 0) < 1) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Error creating wardrobe'),
+                    content:
+                        const Text('Columns must be a number greater than 0'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Ok'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+                return;
+              }
+              if (int.tryParse(_rowsController.text) == null ||
+                  (int.tryParse(_rowsController.text) ?? 0) < 1) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Error creating wardrobe'),
+                    content: const Text('Rows must be a number greater than 0'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Ok'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+                return;
+              }
               if (await ApiService.createWardrobe(
                 _fnameController.text,
                 int.parse(_columnsController.text),
@@ -93,6 +156,29 @@ class CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
               //   rows: _rows,
               // ));
             },
+          ),
+          // Grid preview
+          GridView.count(
+            shrinkWrap: true,
+            crossAxisCount: int.tryParse(_columnsController.text) ?? 1,
+            children: List.generate(
+              (int.tryParse(_columnsController.text) ?? 1) *
+                  (int.tryParse(_rowsController.text) ?? 1),
+              (index) => Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    'Item $index',
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

@@ -37,12 +37,17 @@ class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
           );
         }
         if (snapshot.hasData) {
+          if (snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text('No Wardrobes found'),
+            );
+          }
           return RefreshIndicator(
             onRefresh: () async {
               setState(() {});
             },
             child: ListView.builder(
-              shrinkWrap: true,
+              // shrinkWrap: true,
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 return ListTile(

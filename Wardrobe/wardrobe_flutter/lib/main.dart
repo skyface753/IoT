@@ -105,11 +105,17 @@ class MainHomePage extends StatefulWidget {
 }
 
 class MainHomePageState extends State<MainHomePage> {
+  // Child keys
+  final GlobalKey<ShowAllWardrobesViewState> _wardrobesKey =
+      GlobalKey<ShowAllWardrobesViewState>();
+  final GlobalKey<ShowAllProductsViewState> _productsKey =
+      GlobalKey<ShowAllProductsViewState>();
+
   int _selectedIndex = 0;
-  final List<Widget> _pages = <Widget>[
-    const ShowAllWardrobesView(),
-    ShowAllProductsView()
-  ];
+  // final List<Widget> _pages = <Widget>[
+  //   const ShowAllWardrobesView(),
+  //   const ShowAllProductsView()
+  // ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -121,9 +127,18 @@ class MainHomePageState extends State<MainHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wardrobe'),
+        title: _selectedIndex == 0
+            ? const Text('Wardrobes')
+            : const Text('Products'),
       ),
-      body: _pages.elementAt(_selectedIndex),
+      body: [
+        ShowAllWardrobesView(
+          key: _wardrobesKey,
+        ),
+        ShowAllProductsView(
+          key: _productsKey,
+        ),
+      ][_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -147,14 +162,16 @@ class MainHomePageState extends State<MainHomePage> {
             child: const Icon(Icons.add),
             label: 'Create new wardrobe',
             onTap: () {
-              Navigator.pushNamed(context, CreateWardrobeScreen.routeName);
+              Navigator.pushNamed(context, CreateWardrobeScreen.routeName)
+                  .then((value) => _wardrobesKey.currentState!.setState(() {}));
             },
           ),
           SpeedDialChild(
             child: const Icon(Icons.add),
             label: 'Create new product',
             onTap: () {
-              Navigator.pushNamed(context, CreateProductScreen.routeName);
+              Navigator.pushNamed(context, CreateProductScreen.routeName)
+                  .then((value) => _productsKey.currentState!.setState(() {}));
             },
           ),
         ],

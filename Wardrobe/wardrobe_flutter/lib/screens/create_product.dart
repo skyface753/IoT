@@ -91,7 +91,28 @@ class CreateProductScreenState extends State<CreateProductScreen> {
                 onLongPress: () async {
                   // Delete all products
                   // TODO: Remove this
-                  ApiService.deleteAllProducts();
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text("Warning"),
+                          content: const Text(
+                              "This will delete all products. Are you sure?"),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Cancel")),
+                            TextButton(
+                                onPressed: () {
+                                  ApiService.deleteAll();
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Delete"))
+                          ],
+                        );
+                      });
                 },
                 onPressed: () async {
                   if (_nameController.text.isEmpty) {

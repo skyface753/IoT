@@ -303,19 +303,44 @@ class ApiService {
   }
 
   //TODO: Remove this
-  static Future<bool> deleteAllProducts() async {
+  static Future<bool> deleteAll() async {
     try {
-      final docs = await appwriteDatabase.listDocuments(
+      final docsProducts = await appwriteDatabase.listDocuments(
         databaseId: wardrobeDatabaseID,
         collectionId: productCollectionID,
       );
-      for (var doc in docs.documents) {
-        final response = await appwriteDatabase.deleteDocument(
+      final docsWardrobes = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDatabaseID,
+        collectionId: wardrobeCollectionID,
+      );
+      final docsXref = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDatabaseID,
+        collectionId: wardrobeProductXrefCollectionID,
+      );
+      // Promise all
+      List<Future> futures = [];
+      for (var doc in docsProducts.documents) {
+        futures.add(appwriteDatabase.deleteDocument(
           databaseId: wardrobeDatabaseID,
           collectionId: productCollectionID,
           documentId: doc.$id,
-        );
+        ));
       }
+      for (var doc in docsWardrobes.documents) {
+        futures.add(appwriteDatabase.deleteDocument(
+          databaseId: wardrobeDatabaseID,
+          collectionId: wardrobeCollectionID,
+          documentId: doc.$id,
+        ));
+      }
+      for (var doc in docsXref.documents) {
+        futures.add(appwriteDatabase.deleteDocument(
+          databaseId: wardrobeDatabaseID,
+          collectionId: wardrobeProductXrefCollectionID,
+          documentId: doc.$id,
+        ));
+      }
+      await Future.wait(futures);
       return true;
     } catch (e) {
       debugPrint(e.toString());
