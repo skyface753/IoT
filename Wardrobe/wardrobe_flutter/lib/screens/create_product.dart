@@ -88,6 +88,11 @@ class CreateProductScreenState extends State<CreateProductScreen> {
                         _nameController.text.isEmpty
                             ? Colors.grey
                             : Colors.blue)),
+                onLongPress: () async {
+                  // Delete all products
+                  // TODO: Remove this
+                  ApiService.deleteAllProducts();
+                },
                 onPressed: () async {
                   if (_nameController.text.isEmpty) {
                     return;

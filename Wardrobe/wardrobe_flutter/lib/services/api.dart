@@ -301,4 +301,25 @@ class ApiService {
       return Future.error("Error getting wardrobes");
     }
   }
+
+  //TODO: Remove this
+  static Future<bool> deleteAllProducts() async {
+    try {
+      final docs = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDatabaseID,
+        collectionId: productCollectionID,
+      );
+      for (var doc in docs.documents) {
+        final response = await appwriteDatabase.deleteDocument(
+          databaseId: wardrobeDatabaseID,
+          collectionId: productCollectionID,
+          documentId: doc.$id,
+        );
+      }
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
 }
