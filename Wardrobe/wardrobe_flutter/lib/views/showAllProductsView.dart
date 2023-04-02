@@ -38,6 +38,49 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
     super.dispose();
   }
 
+  List<Product>? searchResultProducts = [];
+  bool _showSearchedProducts = false;
+
+  void search(String query) async {
+    query = query.trim();
+    final result = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDatabaseID,
+        collectionId: productCollectionID,
+        queries: [
+          Query.search('name', query),
+          // Query.search('description', query),
+        ]);
+    final resultDescription = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDatabaseID,
+        collectionId: productCollectionID,
+        queries: [
+          // Query.search('name', query),
+          Query.search('description', query),
+        ]);
+    // Merge results without duplicates (by id)
+    List<Product> mergedResult = [];
+    for (var i = 0; i < result.documents!.length; i++) {
+      mergedResult.add(Product.fromAppwriteDocument(result.documents![i]));
+    }
+    for (var i = 0; i < resultDescription.documents!.length; i++) {
+      final product =
+          Product.fromAppwriteDocument(resultDescription.documents![i]);
+      if (!mergedResult.any((element) => element.$id == product.$id)) {
+        mergedResult.add(product);
+      }
+    }
+    searchResultProducts = mergedResult;
+    setState(() {
+      _showSearchedProducts = true;
+    });
+  }
+
+  void closeSearch() {
+    setState(() {
+      _showSearchedProducts = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -55,52 +98,36 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
             },
             child: ListView.builder(
               shrinkWrap: false,
-              itemCount: snapshot.data!.length,
+              itemCount: _showSearchedProducts && searchResultProducts != null
+                  ? searchResultProducts!.length
+                  : snapshot.data!.length,
               itemBuilder: (context, index) {
                 return ProductListTile(
-                  product: snapshot.data![index],
+                  // product: snapshot.data![index],
+                  product: _showSearchedProducts && searchResultProducts != null
+                      ? searchResultProducts![index]
+                      : snapshot.data![index],
                   onTap: () async {
-                    // return ListTile(
-                    //   title: Text(snapshot.data![index].name),
-                    //   trailing: Text(snapshot.data![index].description),
-                    //   leading: ProductImage(
-                    //     imageID: snapshot.data![index].imageFileID,
-                    //   ),
-                    //   onTap: () async {
                     List<WardrobePos>? wardrobePos =
+                        // await ApiService.getWardrobeProductPositions(
+                        //     snapshot.data![index].$id);
                         await ApiService.getWardrobeProductPositions(
-                            snapshot.data![index].$id);
+                            _showSearchedProducts &&
+                                    searchResultProducts != null
+                                ? searchResultProducts![index].$id
+                                : snapshot.data![index].$id);
                     // PRINT
                     for (var i = 0; i < wardrobePos!.length; i++) {
                       print(wardrobePos[i].toString());
                     }
+                    // _showBottomSheet(
+                    //     context, wardrobePos, snapshot.data![index]);
                     _showBottomSheet(
-                        context, wardrobePos, snapshot.data![index]);
-                    // ignore: use_build_context_synchronously
-                    // showModalBottomSheet(
-                    //     context: context,
-                    //     builder: (context) {
-                    //       if (wardrobePos.length == 0) {
-                    //         return Center(
-                    //           child: Text("Product not in any wardrobe"),
-                    //         );
-                    //       }
-                    //       return SizedBox(
-                    //         height: MediaQuery.of(context).size.height * 0.8,
-                    //         child: ListView.builder(
-                    //           shrinkWrap: true,
-                    //           itemCount: wardrobePos.length,
-                    //           itemBuilder: (context, index) {
-
-                    //             return ListTile(
-                    //               title: Text(
-                    //                   "${wardrobePos[index].wardrobeFQDN} - ${wardrobePos[index].stowColumn}:${wardrobePos[index].stowRow} -> ${wardrobePos[index].amount}x"),
-
-                    //             );
-                    //           },
-                    //         ),
-                    //       );
-                    //     });
+                        context,
+                        wardrobePos,
+                        _showSearchedProducts && searchResultProducts != null
+                            ? searchResultProducts![index]
+                            : snapshot.data![index]);
                   },
                 );
               },

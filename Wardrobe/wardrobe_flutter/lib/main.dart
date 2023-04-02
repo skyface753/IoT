@@ -123,13 +123,51 @@ class MainHomePageState extends State<MainHomePage> {
     });
   }
 
+  bool _isSearching = false;
+  TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _selectedIndex == 0
-            ? const Text('Wardrobes')
-            : const Text('Products'),
+        title: _isSearching
+            ? TextField(
+                autofocus: true,
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Search...',
+                  border: InputBorder.none,
+                ),
+                onSubmitted: (value) {
+                  if (_selectedIndex == 0) {
+                    _wardrobesKey.currentState!.search(value);
+                  } else {
+                    _productsKey.currentState!.search(value);
+                  }
+                },
+              )
+            : _selectedIndex == 0
+                ? const Text('Wardrobes')
+                : const Text('Products'),
+        actions: [
+          // SearchBar
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  if (_selectedIndex == 0) {
+                    _wardrobesKey.currentState!.closeSearch();
+                  } else {
+                    _productsKey.currentState!.closeSearch();
+                  }
+                }
+              });
+            },
+          ),
+        ],
+        //
       ),
       body: [
         ShowAllWardrobesView(

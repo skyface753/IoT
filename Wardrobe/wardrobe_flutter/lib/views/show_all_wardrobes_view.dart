@@ -18,6 +18,14 @@ class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
     setState(() {});
   }
 
+  void search(String query) {
+    setState(() {});
+  }
+
+  void closeSearch() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
