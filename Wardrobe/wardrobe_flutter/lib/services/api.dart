@@ -347,4 +347,33 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<bool> userStatus() async {
+    try {
+      final response = await appwriteAccount.get();
+      debugPrint(response.toString());
+      if (response.$id != null) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  //Logou
+  static Future<bool> logout() async {
+    try {
+      final response = await appwriteAccount.deleteSession(
+        sessionId: "current",
+      );
+      debugPrint(response.toString());
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
 }

@@ -43,7 +43,7 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
 
   void search(String query) async {
     query = query.trim();
-    final result = await appwriteDatabase.listDocuments(
+    final resultName = await appwriteDatabase.listDocuments(
         databaseId: wardrobeDatabaseID,
         collectionId: productCollectionID,
         queries: [
@@ -57,14 +57,25 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
           // Query.search('name', query),
           Query.search('description', query),
         ]);
+    final resultCombined = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDatabaseID,
+        collectionId: productCollectionID,
+        queries: [
+          Query.search('name', query),
+          Query.search('description', query),
+        ]);
+    print(resultName);
+    print(resultDescription);
+    print(resultCombined.documents.toList().toString());
+
     // Merge results without duplicates (by id)
     List<Product> mergedResult = [];
-    for (var i = 0; i < result.documents!.length; i++) {
-      mergedResult.add(Product.fromAppwriteDocument(result.documents![i]));
+    for (var i = 0; i < resultName.documents.length; i++) {
+      mergedResult.add(Product.fromAppwriteDocument(resultName.documents[i]));
     }
-    for (var i = 0; i < resultDescription.documents!.length; i++) {
+    for (var i = 0; i < resultDescription.documents.length; i++) {
       final product =
-          Product.fromAppwriteDocument(resultDescription.documents![i]);
+          Product.fromAppwriteDocument(resultDescription.documents[i]);
       if (!mergedResult.any((element) => element.$id == product.$id)) {
         mergedResult.add(product);
       }

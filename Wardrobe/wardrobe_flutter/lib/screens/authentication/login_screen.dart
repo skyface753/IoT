@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wardrobe_flutter/main.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class LoginScreenState extends State<LoginScreen> {
         _btnController.success();
         await SharedPreferences.getInstance().then((value) => {
               value.setBool('isLoggedIn', true),
-              Navigator.pushReplacementNamed(context, '/wardrobes')
+              Navigator.pushReplacementNamed(context, MainHomePage.routeName),
             });
       } else {
         setState(() {
