@@ -10,18 +10,20 @@ import 'package:wardrobe_flutter/services/api.dart';
 import 'package:wardrobe_flutter/views/showAllProductsView.dart';
 import 'package:wardrobe_flutter/views/show_all_wardrobes_view.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   appwriteClient
       .setEndpoint('https://appwrite.skyface.de/v1')
       .setProject('6425b268553b93ec8c55')
       .setSelfSigned(status: false);
-  runApp(const MyApp());
+  final loggedInUser = await ApiService.userStatus();
+  runApp(MyApp(isLoggedIn: loggedInUser));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final bool isLoggedIn;
+  const MyApp({Key? key, required this.isLoggedIn}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -42,10 +44,11 @@ class MyApp extends StatelessWidget {
       ),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: isLoggedIn ? MainHomePage.routeName : LoginScreen.routeName,
       onGenerateRoute: (settings) {
         // settings.name = settings.name.toLowerCase();
         RouteSettings routeSettings = RouteSettings(name: settings.name);
+
         if (settings.name!.contains('?')) {
           try {
             int questionMarkIndex = settings.name!.toLowerCase().indexOf('?');
@@ -98,6 +101,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MainHomePage extends StatefulWidget {
+  static const String routeName = '/';
   const MainHomePage({Key? key}) : super(key: key);
 
   @override
@@ -167,7 +171,28 @@ class MainHomePageState extends State<MainHomePage> {
             },
           ),
         ],
+        // drawer: const Drawer(
         //
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              title: const Text('Logout'),
+              onTap: () {
+                ApiService.logout();
+                Navigator.pushNamed(context, LoginScreen.routeName);
+              },
+            ),
+          ],
+        ),
       ),
       body: [
         ShowAllWardrobesView(
