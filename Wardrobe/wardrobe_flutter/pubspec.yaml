@@ -41,6 +41,7 @@ dependencies:
   flutter_speed_dial: ^6.0.0
   appwrite: ^8.2.0
   heic_to_jpg: ^0.2.0
+  flutter_slidable: ^2.0.0
 
 dev_dependencies:
   flutter_test:

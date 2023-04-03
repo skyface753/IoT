@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
 import 'package:wardrobe_flutter/screens/show_single_wardrobe_drawer.dart';
 import 'package:wardrobe_flutter/services/api.dart';
@@ -54,25 +55,65 @@ class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
             onRefresh: () async {
               setState(() {});
             },
-            child: ListView.builder(
-              // shrinkWrap: true,
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(snapshot.data![index].fqdn),
-                  trailing: Text(
-                      "${snapshot.data![index].maxRows} x ${snapshot.data![index].maxColumns}"),
-                  onTap: () {
-                    // MaterialPageRoute(
-                    //   builder: (context) =>
-                    //       DrawersScreen(snapshot.data![index]),
-                    // );
-                    Navigator.pushNamed(
-                        context, ShowSingleWardrobeDrawerScreen.routeName,
-                        arguments: snapshot.data![index]);
-                  },
-                );
-              },
+            child: SlidableAutoCloseBehavior(
+              child: ListView.builder(
+                // shrinkWrap: true,
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return Slidable(
+                      endActionPane: ActionPane(
+                        motion: ScrollMotion(),
+                        extentRatio: 0.25,
+                        children: [
+                          SlidableAction(
+                            onPressed: (context) async {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Delete Wardrobe'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this wardrobe?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        await ApiService.deleteWardrobe(
+                                            snapshot.data![index].$id);
+                                        Navigator.of(context).pop();
+                                        setState(() {});
+                                      },
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            backgroundColor: Colors.red,
+                            label: 'Delete',
+                          )
+                        ],
+                      ),
+                      child: ListTile(
+                        title: Text(snapshot.data![index].fqdn),
+                        trailing: Text(
+                            "${snapshot.data![index].maxRows} x ${snapshot.data![index].maxColumns}"),
+                        onTap: () {
+                          // MaterialPageRoute(
+                          //   builder: (context) =>
+                          //       DrawersScreen(snapshot.data![index]),
+                          // );
+                          Navigator.pushNamed(
+                              context, ShowSingleWardrobeDrawerScreen.routeName,
+                              arguments: snapshot.data![index]);
+                        },
+                      ));
+                },
+              ),
             ),
           );
         } else {

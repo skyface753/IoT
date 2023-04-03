@@ -376,4 +376,35 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<bool> deleteWardrobe(String wardrobeId) async {
+    try {
+      final response = await appwriteDatabase.deleteDocument(
+        databaseId: wardrobeDatabaseID,
+        collectionId: wardrobeCollectionID,
+        documentId: wardrobeId,
+      );
+      debugPrint(response.toString());
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
+
+  // deleteProduct
+  static Future<bool> deleteProduct(String productId) async {
+    try {
+      final response = await appwriteDatabase.deleteDocument(
+        databaseId: wardrobeDatabaseID,
+        collectionId: productCollectionID,
+        documentId: productId,
+      );
+      debugPrint(response.toString());
+      return true;
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
 }

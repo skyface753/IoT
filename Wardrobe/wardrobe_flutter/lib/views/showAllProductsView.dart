@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:wardrobe_flutter/components/products_list_tile.dart';
 // import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:wardrobe_flutter/models/product.dart';
@@ -107,41 +108,86 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
             onRefresh: () async {
               setState(() {});
             },
-            child: ListView.builder(
-              shrinkWrap: false,
-              itemCount: _showSearchedProducts && searchResultProducts != null
-                  ? searchResultProducts!.length
-                  : snapshot.data!.length,
-              itemBuilder: (context, index) {
-                return ProductListTile(
-                  // product: snapshot.data![index],
-                  product: _showSearchedProducts && searchResultProducts != null
-                      ? searchResultProducts![index]
-                      : snapshot.data![index],
-                  onTap: () async {
-                    List<WardrobePos>? wardrobePos =
-                        // await ApiService.getWardrobeProductPositions(
-                        //     snapshot.data![index].$id);
-                        await ApiService.getWardrobeProductPositions(
-                            _showSearchedProducts &&
-                                    searchResultProducts != null
-                                ? searchResultProducts![index].$id
-                                : snapshot.data![index].$id);
-                    // PRINT
-                    for (var i = 0; i < wardrobePos!.length; i++) {
-                      print(wardrobePos[i].toString());
-                    }
-                    // _showBottomSheet(
-                    //     context, wardrobePos, snapshot.data![index]);
-                    _showBottomSheet(
-                        context,
-                        wardrobePos,
-                        _showSearchedProducts && searchResultProducts != null
+            child: SlidableAutoCloseBehavior(
+              child: ListView.builder(
+                shrinkWrap: false,
+                itemCount: _showSearchedProducts && searchResultProducts != null
+                    ? searchResultProducts!.length
+                    : snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return Slidable(
+                      endActionPane:
+                          ActionPane(motion: const ScrollMotion(), children: [
+                        SlidableAction(
+                          label: "Delete",
+                          backgroundColor: Colors.red,
+                          onPressed: (context) async {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text("Delete Product"),
+                                  content: Text(
+                                      "Do you really want to delete this product?"),
+                                  actions: [
+                                    TextButton(
+                                      child: Text("Cancel"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text("Delete"),
+                                      onPressed: () async {
+                                        await ApiService.deleteProduct(
+                                            _showSearchedProducts &&
+                                                    searchResultProducts != null
+                                                ? searchResultProducts![index]
+                                                    .$id
+                                                : snapshot.data![index].$id);
+                                        Navigator.of(context).pop();
+                                        setState(() {});
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        )
+                      ]),
+                      child: ProductListTile(
+                        // product: snapshot.data![index],
+                        product: _showSearchedProducts &&
+                                searchResultProducts != null
                             ? searchResultProducts![index]
-                            : snapshot.data![index]);
-                  },
-                );
-              },
+                            : snapshot.data![index],
+                        onTap: () async {
+                          List<WardrobePos>? wardrobePos =
+                              // await ApiService.getWardrobeProductPositions(
+                              //     snapshot.data![index].$id);
+                              await ApiService.getWardrobeProductPositions(
+                                  _showSearchedProducts &&
+                                          searchResultProducts != null
+                                      ? searchResultProducts![index].$id
+                                      : snapshot.data![index].$id);
+                          // PRINT
+                          for (var i = 0; i < wardrobePos!.length; i++) {
+                            print(wardrobePos[i].toString());
+                          }
+                          // _showBottomSheet(
+                          //     context, wardrobePos, snapshot.data![index]);
+                          _showBottomSheet(
+                              context,
+                              wardrobePos,
+                              _showSearchedProducts &&
+                                      searchResultProducts != null
+                                  ? searchResultProducts![index]
+                                  : snapshot.data![index]);
+                        },
+                      ));
+                },
+              ),
             ),
           );
         } else {

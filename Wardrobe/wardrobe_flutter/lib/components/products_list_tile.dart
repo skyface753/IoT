@@ -16,7 +16,7 @@ class ProductListTile extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ProductListTileState createState() => _ProductListTileState();
+  State<ProductListTile> createState() => _ProductListTileState();
 }
 
 class _ProductListTileState extends State<ProductListTile> {

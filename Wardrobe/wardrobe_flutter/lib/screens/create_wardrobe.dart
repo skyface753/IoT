@@ -33,11 +33,11 @@ class CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
           ),
           Row(
             children: [
-              const Text('Columns'),
+              const Text('Rows'),
               const SizedBox(width: 10),
               Expanded(
                 child: TextField(
-                  controller: _columnsController,
+                  controller: _rowsController,
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly
@@ -51,11 +51,11 @@ class CreateWardrobeScreenState extends State<CreateWardrobeScreen> {
           ),
           Row(
             children: [
-              const Text('Rows'),
+              const Text('Columns'),
               const SizedBox(width: 10),
               Expanded(
                 child: TextField(
-                  controller: _rowsController,
+                  controller: _columnsController,
                   keyboardType: TextInputType.number,
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly
