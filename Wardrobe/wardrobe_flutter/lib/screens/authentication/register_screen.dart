@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wardrobe_flutter/main.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -116,12 +117,13 @@ class RegisterScreenState extends State<RegisterScreen> {
                       return;
                     }
                     try {
-                      if (await ApiService.register(
-                          _nameController.text, _passwordController.text)) {
+                      final registerRespone = await ApiService.register(
+                          _emailController.text, _passwordController.text);
+                      print("registerRespone: $registerRespone");
+                      if (registerRespone) {
                         await SharedPreferences.getInstance().then((value) => {
                               value.setBool('isLoggedIn', true),
-                              Navigator.pushReplacementNamed(
-                                  context, '/wardrobes')
+                              Navigator.pop(context),
                             });
                       } else {
                         setState(() {
@@ -129,6 +131,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                         });
                       }
                     } catch (e) {
+                      print(e);
                       setState(() {
                         _wrongEmail = true;
                         _emailText =

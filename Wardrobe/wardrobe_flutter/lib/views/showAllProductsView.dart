@@ -1,10 +1,12 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:wardrobe_flutter/components/products_list_tile.dart';
 // import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/models/wardrobe_col_pos.dart';
+import 'package:wardrobe_flutter/screens/authentication/login_screen.dart';
 import 'package:wardrobe_flutter/services/api.dart';
 
 class ShowAllProductsView extends StatefulWidget {
@@ -93,15 +95,51 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
     });
   }
 
+  RoundedLoadingButtonController _btnController =
+      RoundedLoadingButtonController();
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: ApiService.getAllProducts(),
       builder: (context, AsyncSnapshot<List<Product>?> snapshot) {
+        if (snapshot.hasError) {
+          _btnController.error();
+          return ConstrainedBox(
+            constraints: const BoxConstraints.expand(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('An error occured'),
+                ElevatedButton(
+                    child: const Text("Login"),
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(
+                          context, LoginScreen.routeName);
+                    }),
+              ],
+            ),
+          );
+        }
         if (snapshot.hasData) {
+          _btnController.success();
           if (snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No Products found'),
+            _btnController.reset();
+            return ConstrainedBox(
+              constraints: const BoxConstraints.expand(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('No Products found'),
+                  RoundedLoadingButton(
+                    controller: _btnController,
+                    onPressed: () {
+                      setState(() {});
+                    },
+                    child: const Text('Refresh'),
+                  ),
+                ],
+              ),
             );
           }
           return RefreshIndicator(

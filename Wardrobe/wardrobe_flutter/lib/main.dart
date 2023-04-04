@@ -188,7 +188,7 @@ class MainHomePageState extends State<MainHomePage> {
               title: const Text('Logout'),
               onTap: () {
                 ApiService.logout();
-                Navigator.pushNamed(context, LoginScreen.routeName);
+                Navigator.pushReplacementNamed(context, LoginScreen.routeName);
               },
             ),
           ],
