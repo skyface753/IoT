@@ -165,7 +165,7 @@ class ApiService {
       return true;
     } catch (e) {
       debugPrint(e.toString());
-      return Future.error("Error creating wardrobe");
+      return false;
     }
   }
 
