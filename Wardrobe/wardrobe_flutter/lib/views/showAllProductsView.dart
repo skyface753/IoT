@@ -269,6 +269,8 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
     );
   }
 
+  TextEditingController _amountController = TextEditingController();
+
   void _showBottomSheet(
       BuildContext context, List<WardrobePos> wardrobePos, Product product) {
     showModalBottomSheet(
@@ -337,10 +339,114 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
                             controller: controller,
                             itemCount: wardrobePos.length,
                             itemBuilder: (context, index) {
-                              return ListTile(
-                                title: Text(
-                                    "${wardrobePos[index].wardrobeFQDN} - ${wardrobePos[index].stowColumn}:${wardrobePos[index].stowRow} -> ${wardrobePos[index].amount}x"),
-                              );
+                              return InkWell(
+                                  onTap: () {
+                                    // Show dialog, with a input field for the amount to decrement the product from the wardrobe
+                                    // If the amount is the same as the amount in the wardrobe, then delete the wardrobePos
+                                    // If the amount is less than the amount in the wardrobe, then decrement the amount in the wardrobe
+                                    // If the amount is more than the amount in the wardrobe, then show an error message
+                                    _amountController.text = "";
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text("Withdraw Product"),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                    "How many ${product.name} do you want to withdraw from ${wardrobePos[index].wardrobeFQDN} - ${wardrobePos[index].stowColumn}:${wardrobePos[index].stowRow}?"),
+                                                TextField(
+                                                  controller: _amountController,
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  decoration: InputDecoration(
+                                                      hintText: "Amount"),
+                                                ),
+                                                TextButton(
+                                                    onPressed: () {
+                                                      _amountController.text =
+                                                          wardrobePos[index]
+                                                              .amount
+                                                              .toString();
+                                                    },
+                                                    child: Text("Max")),
+                                                TextButton(
+                                                    onPressed: () {
+                                                      _amountController.text =
+                                                          "1";
+                                                    },
+                                                    child: Text("1"))
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                child: Text("Cancel"),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                              TextButton(
+                                                  child: Text("Withdraw"),
+                                                  onPressed: () async {
+                                                    if (int.parse(
+                                                            _amountController
+                                                                .text) >
+                                                        wardrobePos[index]
+                                                            .amount) {
+                                                      // Show alert error message
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (context) {
+                                                            return AlertDialog(
+                                                              title:
+                                                                  Text("Error"),
+                                                              content: Text(
+                                                                  "You can't withdraw more than ${wardrobePos[index].amount}x ${product.name} from ${wardrobePos[index].wardrobeFQDN} - ${wardrobePos[index].stowColumn}:${wardrobePos[index].stowRow}"),
+                                                              actions: [
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    },
+                                                                    child: Text(
+                                                                        "Ok"))
+                                                              ],
+                                                            );
+                                                          });
+                                                    } else {
+                                                      // Withdraw product
+                                                      await ApiService.withdrawProduct(
+                                                          productId:
+                                                              wardrobePos[index]
+                                                                  .productFk,
+                                                          wardrobeId:
+                                                              wardrobePos[index]
+                                                                  .wardrobeFk,
+                                                          stowColumn:
+                                                              wardrobePos[index]
+                                                                  .stowColumn,
+                                                          stowRow:
+                                                              wardrobePos[index]
+                                                                  .stowRow,
+                                                          amount: int.parse(
+                                                              _amountController
+                                                                  .text));
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      setState(() {});
+                                                    }
+                                                  })
+                                            ],
+                                          );
+                                        });
+                                  },
+                                  child: ListTile(
+                                    title: Text(
+                                        "${wardrobePos[index].wardrobeFQDN} - ${wardrobePos[index].stowColumn}:${wardrobePos[index].stowRow} -> ${wardrobePos[index].amount}x"),
+                                  ));
                             },
                           ),
                         ),

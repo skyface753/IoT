@@ -407,4 +407,60 @@ class ApiService {
       return false;
     }
   }
+
+  static Future<bool> withdrawProduct({
+    required String productId,
+    required String wardrobeId,
+    required int stowColumn,
+    required int stowRow,
+    required int amount,
+  }) async {
+    try {
+      // Get current entry in xref
+      final exists = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDatabaseID,
+        collectionId: wardrobeProductXrefCollectionID,
+        queries: [
+          Query.equal("product_fk", productId),
+          Query.equal("wardrobe_fk", wardrobeId),
+          Query.equal("stow_column", stowColumn),
+          Query.equal("stow_row", stowRow),
+        ],
+      );
+      if (exists.documents.isEmpty) {
+        debugPrint("No product found");
+        return false;
+      }
+      final doc = exists.documents.first;
+      final currentAmount = doc.data["amount"];
+      if (currentAmount == amount) {
+        // Delete entry
+        final response = await appwriteDatabase.deleteDocument(
+          databaseId: wardrobeDatabaseID,
+          collectionId: wardrobeProductXrefCollectionID,
+          documentId: doc.$id,
+        );
+        debugPrint(response.toString());
+        return true;
+      } else if (currentAmount > amount) {
+        // Update entry
+        final response = await appwriteDatabase.updateDocument(
+          databaseId: wardrobeDatabaseID,
+          collectionId: wardrobeProductXrefCollectionID,
+          documentId: doc.$id,
+          data: {
+            "amount": currentAmount - amount,
+          },
+        );
+        debugPrint(response.toString());
+        return true;
+      } else {
+        debugPrint("Amount to withdraw is higher than current amount");
+        return false;
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
+    }
+  }
 }
