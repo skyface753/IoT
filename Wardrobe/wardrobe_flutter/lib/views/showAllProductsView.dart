@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -14,6 +16,13 @@ class ShowAllProductsView extends StatefulWidget {
 
   @override
   ShowAllProductsViewState createState() => ShowAllProductsViewState();
+}
+
+class ProductWithSearch {
+  final Product product;
+  int? searchScore;
+
+  ProductWithSearch(this.product, this.searchScore);
 }
 
 class ShowAllProductsViewState extends State<ShowAllProductsView> {
@@ -46,6 +55,7 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
 
   void search(String query) async {
     query = query.trim();
+    debugPrint('Search for $query');
     final resultName = await appwriteDatabase.listDocuments(
         databaseId: wardrobeDatabaseID,
         collectionId: productCollectionID,
@@ -83,6 +93,21 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
         mergedResult.add(product);
       }
     }
+    // Search through _productList
+    for (var i = 0; i < _productList!.length; i++) {
+      final product = _productList![i];
+      if (product.name.toLowerCase().contains(query.toLowerCase())) {
+        if (!mergedResult.any((element) => element.$id == product.$id)) {
+          mergedResult.add(product);
+        }
+      }
+      if (product.description.toLowerCase().contains(query.toLowerCase())) {
+        if (!mergedResult.any((element) => element.$id == product.$id)) {
+          mergedResult.add(product);
+        }
+      }
+    }
+
     searchResultProducts = mergedResult;
     setState(() {
       _showSearchedProducts = true;
@@ -95,13 +120,20 @@ class ShowAllProductsViewState extends State<ShowAllProductsView> {
     });
   }
 
-  RoundedLoadingButtonController _btnController =
+  final RoundedLoadingButtonController _btnController =
       RoundedLoadingButtonController();
+
+  List<Product>? _productList = [];
+
+  Future<List<Product>?> getAllProducts() async {
+    _productList = await ApiService.getAllProducts();
+    return _productList;
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: ApiService.getAllProducts(),
+      future: getAllProducts(),
       builder: (context, AsyncSnapshot<List<Product>?> snapshot) {
         if (snapshot.hasError) {
           _btnController.error();

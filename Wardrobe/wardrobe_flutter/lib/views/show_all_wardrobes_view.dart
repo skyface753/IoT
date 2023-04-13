@@ -1,3 +1,4 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -14,22 +15,29 @@ class ShowAllWardrobesView extends StatefulWidget {
 }
 
 class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
-  Future<void> loginDebugAccount() async {
-    //TODO: Remove this
-    // await ApiService.register("test@skyface.de", "Test123!");
-    await ApiService.login("test@skyface.de", "Test123!");
-    setState(() {});
+  void search(String query) async {
+    final resultFqdn = await appwriteDatabase.listDocuments(
+        databaseId: wardrobeDatabaseID,
+        collectionId: wardrobeCollectionID,
+        queries: [Query.search("fqdn", query)]);
+    _searchResult = resultFqdn.documents
+        .map((e) => Wardrobe.fromAppwriteDocument(e))
+        .toList();
+    setState(() {
+      showSearch = true;
+    });
   }
 
-  void search(String query) {
-    setState(() {});
-  }
+  bool showSearch = false;
+  List<Wardrobe> _searchResult = [];
 
   void closeSearch() {
-    setState(() {});
+    setState(() {
+      showSearch = false;
+    });
   }
 
-  RoundedLoadingButtonController _btnController =
+  final RoundedLoadingButtonController _btnController =
       RoundedLoadingButtonController();
   @override
   Widget build(BuildContext context) {
@@ -82,7 +90,8 @@ class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
             child: SlidableAutoCloseBehavior(
               child: ListView.builder(
                 // shrinkWrap: true,
-                itemCount: snapshot.data!.length,
+                itemCount:
+                    showSearch ? _searchResult.length : snapshot.data!.length,
                 itemBuilder: (context, index) {
                   return Slidable(
                       endActionPane: ActionPane(
@@ -107,7 +116,10 @@ class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
                                     TextButton(
                                       onPressed: () async {
                                         await ApiService.deleteWardrobe(
-                                            snapshot.data![index].$id);
+                                            showSearch
+                                                ? _searchResult[index].$id
+                                                : snapshot.data![index].$id);
+                                        // snapshot.data![index].$id);
                                         Navigator.of(context).pop();
                                         setState(() {});
                                       },
@@ -123,9 +135,14 @@ class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
                         ],
                       ),
                       child: ListTile(
-                        title: Text(snapshot.data![index].fqdn),
+                        // title: Text(snapshot.data![index].fqdn),
+                        title: Text(showSearch
+                            ? _searchResult[index].fqdn
+                            : snapshot.data![index].fqdn),
+                        // trailing: Text(
+                        //     "${snapshot.data![index].maxRows} x ${snapshot.data![index].maxColumns}"),
                         trailing: Text(
-                            "${snapshot.data![index].maxRows} x ${snapshot.data![index].maxColumns}"),
+                            "${showSearch ? _searchResult[index].maxRows : snapshot.data![index].maxRows} x ${showSearch ? _searchResult[index].maxColumns : snapshot.data![index].maxColumns}"),
                         onTap: () {
                           // MaterialPageRoute(
                           //   builder: (context) =>
@@ -133,7 +150,10 @@ class ShowAllWardrobesViewState extends State<ShowAllWardrobesView> {
                           // );
                           Navigator.pushNamed(
                               context, ShowSingleWardrobeDrawerScreen.routeName,
-                              arguments: snapshot.data![index]);
+                              // arguments: snapshot.data![index]);
+                              arguments: showSearch
+                                  ? _searchResult[index]
+                                  : snapshot.data![index]);
                         },
                       ));
                 },
