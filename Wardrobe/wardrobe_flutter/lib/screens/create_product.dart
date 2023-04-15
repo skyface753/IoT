@@ -243,7 +243,7 @@ class CreateProductScreenState extends State<CreateProductScreen> {
             false, // this will return PlatformFile object with read stream#
         type: FileType.image,
         allowMultiple: false,
-        allowCompression: false,
+        allowCompression: true,
       );
       if (result != null) {
         final objFile = result.files.single;
@@ -261,7 +261,7 @@ class CreateProductScreenState extends State<CreateProductScreen> {
     } else {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: false,
-        allowCompression: false,
+        allowCompression: true,
         type: FileType.image,
       );
       if (result != null) {

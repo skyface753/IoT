@@ -1,3 +1,4 @@
+import 'package:appwrite/models.dart' as appwrite_models;
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/models/wardrobe.dart';
 import 'package:wardrobe_flutter/models/wardrobe_col_pos.dart';
@@ -5,6 +6,8 @@ import 'package:wardrobe_flutter/models/wardrobe_products.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:flutter/foundation.dart';
 
+String appwriteEndpoint = 'https://appwrite.skyface.de/v1';
+String appwriteProjectID = '6425b268553b93ec8c55';
 Client appwriteClient = Client();
 Account appwriteAccount = Account(appwriteClient);
 Databases appwriteDatabase = Databases(appwriteClient);
@@ -32,6 +35,16 @@ class ApiService {
       debugPrint(e.toString());
       return Future.error("Error getting wardrobes");
     }
+  }
+
+  static String? jwt;
+
+  static Future<String> getJWT() async {
+    if (jwt == null) {
+      final response = await appwriteAccount.createJWT();
+      jwt = response.jwt;
+    }
+    return jwt!;
   }
 
   static Future<bool> login(String email, String password) async {

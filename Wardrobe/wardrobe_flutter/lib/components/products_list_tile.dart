@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:appwrite/models.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wardrobe_flutter/models/product.dart';
 import 'package:wardrobe_flutter/services/api.dart';
@@ -113,28 +115,51 @@ class _ProductImageState extends State<_ProductImage> {
         height: widget.height ?? 50,
         child: widget.imageID != null
             ? FutureBuilder(
-                future: appwriteStorage
-                    .getFilePreview(
-                        bucketId: productImageBucketID, fileId: widget.imageID!)
-                    .catchError((error) {
-                  print(error);
-                }),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    imageFile = Image.memory(
-                      snapshot.data as Uint8List,
-                      // fit: BoxFit.cover,
-                    );
-                    return CircleAvatar(backgroundImage: imageFile!.image);
-                  } else if (snapshot.hasError) {
-                    return const Text(textAlign: TextAlign.center, "No Image");
-                    // CircleAvatar(
-                    //     backgroundImage:
-                    //         AssetImage('No_image_available.svg.png'));
+                future: ApiService.getJWT(),
+                builder: (context, AsyncSnapshot<String> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator();
                   }
-                  return const CircularProgressIndicator();
+                  if (snapshot.hasError) {
+                    return const Text(textAlign: TextAlign.center, "No Image");
+                  }
+                  // return ClipOval(
+                  // child:
+                  return CachedNetworkImage(
+                    imageUrl:
+                        '${appwriteEndpoint}/storage/buckets/${productImageBucketID}/files/${widget.imageID}/view',
+                    httpHeaders: {
+                      'X-Appwrite-Project': appwriteProjectID,
+                      'X-Appwrite-JWT': snapshot.data!.toString(),
+                    },
+                    // )
+                  );
                 },
               )
+
+            // FutureBuilder(
+            //     future: appwriteStorage
+            //         .getFilePreview(
+            //             bucketId: productImageBucketID, fileId: widget.imageID!)
+            //         .catchError((error) {
+            //       print(error);
+            //     }),
+            //     builder: (context, snapshot) {
+            //       if (snapshot.hasData) {
+            //         imageFile = Image.memory(
+            //           snapshot.data as Uint8List,
+            //           // fit: BoxFit.cover,
+            //         );
+            //         return CircleAvatar(backgroundImage: imageFile!.image);
+            //       } else if (snapshot.hasError) {
+            //         return const Text(textAlign: TextAlign.center, "No Image");
+            //         // CircleAvatar(
+            //         //     backgroundImage:
+            //         //         AssetImage('No_image_available.svg.png'));
+            //       }
+            //       return const CircularProgressIndicator();
+            //     },
+            //   )
             : const Text(textAlign: TextAlign.center, "No Image"));
     // : CircleAvatar(
     //     backgroundImage: AssetImage('No_image_available.svg.png')));

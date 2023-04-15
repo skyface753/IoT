@@ -14,8 +14,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   appwriteClient
-      .setEndpoint('https://appwrite.skyface.de/v1')
-      .setProject('6425b268553b93ec8c55')
+      .setEndpoint(appwriteEndpoint)
+      .setProject(appwriteProjectID)
       .setSelfSigned(status: false);
   final loggedInUser = await ApiService.userStatus();
   runApp(MyApp(isLoggedIn: loggedInUser));
